@@ -3,13 +3,24 @@ import {Button, Linking, Pressable, StyleSheet, Text, View, Image} from 'react-n
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+// import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Ionicons';
+
+
 
 import { useFonts } from 'expo-font';
-import { RNNSearchBar } from "react-native-navigation-search-bar";
 
 
 import MovieList from './src/components/MovieList.js'
 import DetailedMovie from "./src/components/DetailedMovie.js";
+import {InfluxDB, Point} from "@influxdata/influxdb-client";
+
+import { LogBox } from 'react-native';
+import MyList from "./src/components/MyList";
+import React from "react";
+import NavBar from "./src/components/NavBar";
+
+
 
 
 
@@ -25,7 +36,6 @@ export default function App() {
 
     //Pour le paramètre onChangeText
     // const [search, setSearch] = React.useState('');
-
     let searchData = ""
 
 
@@ -44,9 +54,11 @@ export default function App() {
             headerIconColor: '#c43434',
             shouldShowHintSearchIcon: true,
             // onChangeText: (event) => setSearch(event.nativeEvent.text),
-            onChangeText: (event) => searchData = event.nativeEvent.text,
+            // onChangeText: (event) => searchData = event.nativeEvent.text,
+            // onChangeText: () => navigation.navigate('Details', {movieData: this.state.movieData}),
             // onPress={() => navigation.navigate('Home')}
             headerTransparent: false,
+            onPress: () => alert("hellooo"),
         },
         headerSearchBarStyle: {
             backgroundColor: '#b61e1e',
@@ -83,23 +95,9 @@ export default function App() {
                 <Stack.Screen name="Start" component={StartScreen} options={{headerShown: false}} />
                 <Stack.Screen name="Home" component={HomeScreen} options={homeNavOptions} />
                 <Stack.Screen name="Details" component={DetailsScreen} options={detailsNavOptions} />
+                <Stack.Screen name="MyList" component={MyListScreen} options={homeNavOptions} />
             </Stack.Navigator>
         </NavigationContainer>
-    );
-}
-
-
-function SearchBar(props) {
-    const componentId = "1"
-    const statusBarHeight = 2
-    return (
-        <RNNSearchBar
-            componentId={componentId} // <-- RNN component id
-            statusBarHeight={statusBarHeight} // <-- prop status bar height
-            search={".Hey.."}
-            onChangeText={null}
-
-        />
     );
 }
 
@@ -124,18 +122,8 @@ function StartScreen({ navigation }) {
     // const statusBarHeight = 2
 
 
-
     return (
         <View style={styles.container}>
-
-            {/*// register our drawer component with RNN*/}
-            {/*<RNNSearchBar*/}
-            {/*    componentId={componentId} // <-- RNN component id*/}
-            {/*    statusBarHeight={statusBarHeight} // <-- prop status bar height*/}
-            {/*    search={".Hey.."}*/}
-            {/*    onChangeText={null}*/}
-
-            {/*/>*/}
 
 
             <Text style={styles.mainTitle}>NEWS
@@ -160,21 +148,9 @@ function StartScreen({ navigation }) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function HomeScreen({ navigation }) {
+
+
     return (
 
             <View style={homeStyles.body}>
@@ -182,6 +158,13 @@ function HomeScreen({ navigation }) {
                     <MovieList
                         navigation={navigation}
                     />
+
+                <NavBar
+                    navigation={navigation}
+                    selected={"home"}
+                />
+
+
                 <StatusBar style="auto" />
                 {/*<StatusBar*/}
                 {/*    animated={true}*/}
@@ -191,6 +174,30 @@ function HomeScreen({ navigation }) {
                 {/*    style="light"*/}
                 {/*/>*/}
             </View>
+
+
+    );
+}
+
+
+function MyListScreen({ navigation }) {
+    return (
+
+        <View style={homeStyles.body}>
+
+            <MyList
+                navigation={navigation}
+            />
+
+
+            <NavBar
+                navigation={navigation}
+                selected={"myList"}
+            />
+
+            <StatusBar style="auto" />
+
+        </View>
 
 
     );
@@ -248,6 +255,41 @@ const styles = StyleSheet.create({
   },
 });
 
+const mainButtonStyle = StyleSheet.create({
+
+    navBar: {
+        backgroundColor: '#151515',
+        width: '100%',
+        height: '7%',
+        // height: '17%',
+
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    button: {
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        marginHorizontal: 40,
+
+    },
+
+    textButton: {
+        color: '#fff',
+        fontSize: 9,
+
+
+    },
+
+
+
+
+
+
+});
+
 
 const homeStyles = StyleSheet.create({
 
@@ -262,6 +304,9 @@ const homeStyles = StyleSheet.create({
 
 });
 
+
+
+LogBox.ignoreLogs(['Setting a timer for a long period of time'])
 
 
 

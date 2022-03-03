@@ -1,4 +1,4 @@
-import {Button, Image, Pressable, StyleSheet, Text, View} from "react-native";
+import {Button, Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/AntDesign';
 import YoutubePlayer from 'react-native-youtube-iframe';
@@ -6,13 +6,76 @@ import AnimatedLoader from "react-native-animated-loader";
 import React from "react";
 import Loading from "./Loading.js";
 
+import firebase from "../../database/firebase";
+
+// const plusButton = '../../assets/icon/PlusButton.png'
+// const validButton = '../../assets/icon/ValidButton.png'
+
 
 class DetailedMovie extends React.Component{
 
     constructor(props) {
         super(props);
 
+        this.docs = firebase.firestore().collection('likes')
+
+
         this.state = {
+
+            buttonWidth: 40,
+
+            // validButton: (<Image
+            //                 source={require('../../assets/icon/ValidButton.png')}
+            //                 style={styles.floatingButtonStyle}
+            //             />),
+            //
+            // plusButton: (<Image
+            //                 source={require('../../assets/icon/PlusButton.png')}
+            //                 style={styles.floatingButtonStyle}
+            //             />),
+            //
+            validButton: <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                                if(!this.state.liked){
+                                    console.log({Status: this.state.liked})
+                                    this.addLikeToFirebase(this.props.movieData.id)
+                                }else{
+                                    this.removeLikeFromFirebase(this.props.movieData.id)
+                                }
+                            }}
+                style={styles.touchableOpacityStyle}>
+
+                <Image
+                    source={require('../../assets/icon/ValidButton.png')}
+                    style={styles.floatingButtonStyle}
+                />
+            </TouchableOpacity>
+                ,
+            plusButton: <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                                if(!this.state.liked){
+                                    console.log({Status: this.state.liked})
+                                    this.addLikeToFirebase(this.props.movieData.id)
+                                }else{
+                                    this.removeLikeFromFirebase(this.props.movieData.id)
+                                }
+                            }}
+                style={styles.touchableOpacityStyle}>
+
+                <Image
+                    source={require('../../assets/icon/PlusButton.png')}
+                    style={styles.floatingButtonStyle}
+                />
+            </TouchableOpacity>
+                ,
+
+
+
+
+            init: false,
+
             // posterUrl: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path,
             upFrame: <Image style={styles.moviePoster} source={{uri: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path}} />,
             downFrame: <View></View>,
@@ -29,11 +92,223 @@ class DetailedMovie extends React.Component{
             textHidden: true,
         }
 
-        this.showOverview = this.showOverview.bind(this)
+        this.addLikeToFirebase = this.addLikeToFirebase.bind(this)
+    }
+
+
+    addLikeToFirebase = (id) => {
+        this.changeButton(true)
+
+        const db = firebase.firestore()
+
+
+
+        // let movielist = [];
+        //
+        // const collectionList = db.collection('likes').get()
+        //     .then(querySnapshot => {
+        //         querySnapshot.forEach((doc) => {
+        //
+        //             const {liked_movie_id} = doc.data()
+        //             movielist.push({
+        //                 liked_movie_id});
+        //
+        //         });
+        //
+        //         // console.log(movielist)
+        //         // return null;
+        //     })
+        //     .then(() => console.log(movielist))
+        //
+        // // if(movielist)
+        //
+        // let tempCheck = false;
+        //
+        // for(let i = 0; i < movielist.length; i++) {
+        //     if (movielist[i].liked_movie_id === id) {
+        //         this.setState({liked: true})
+        //         tempCheck = true
+        //         return
+        //     }
+        // }
+
+
+        // if(!this.state.liked && !tempCheck){
+            db.collection('likes').add({
+                liked_movie_id: id
+                // creatAt: firebase.firestore.FieldValue.serverTimestamp(),
+            })
+
+
+        // }
+
+
+
+        const liked = this.isItLiked(id)
+
+    }
+
+    removeLikeFromFirebase = (id) => {
+
+
+            this.changeButton(false)
+
+            // this.docs.deleteDoc( (ref: id)
+            let deleteQuery = this.docs.where('liked_movie_id', '==', id)
+
+            deleteQuery.get()
+                .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    doc.ref.delete()
+                })
+            })
+                // .then(() => {const liked = this.isItLiked(id)})
+
+            // (
+            // //     {
+            // //     reference: 'eerrtt'
+            // //     // creatAt: firebase.firestore.FieldValue.serverTimestamp(),
+            // // // }).then(r => )
+            // // }
+            // )
+            // .then(() => {const liked = this.isItLiked(id)})
+
+
+
+
+
+        const liked = this.isItLiked(id)
+
+
+    }
+
+    changeButton = (liked) => {
+        if(liked){
+            this.setState({floatingButton: this.state.validButton})
+        }else{
+            this.setState({floatingButton: this.state.plusButton})
+        }
+    }
+
+    getUri = () => {
+
+        let uriIcon = ""
+        // const liked = this.isItLiked(this.props.movieData.id)
+        // if (this.state.liked){
+
+        // console.log({tempCheck: liked})
+
+        if(this.isItLiked(this.props.movieData.id) === true){
+            // console.log("TRUE")
+            uriIcon = '../../assets/icon/ValidButton.png'
+            // uriIcon = 'https://raw.githubusercontent.com/futuresimple/android-floating-action-button/master/screenshots/custom.png'
+        }
+        if(this.isItLiked(this.props.movieData.id) === false){
+            // console.log("FALSE")
+            uriIcon = '../../assets/icon/PlusButton.png'
+            // uriIcon = 'https://4.bp.blogspot.com/-gfkXY65adsU/WepEU5oTR5I/AAAAAAAAADI/ZhPMS8-hN6ALM_MT95OdTUWfCz5qw0iSQCLcBGAs/s1600/FB.png'
+        }
+
+
+        // console.log("OUT")
+
+        // console.log({uriIcon: uriIcon})
+
+        return uriIcon
+
+
+    }
+
+    isItLiked = (id) => {
+
+        let movielist = [];
+        let tempCheck = false;
+
+        firebase.firestore().collection('likes').get()
+            .then(querySnapshot => {
+                querySnapshot.forEach((doc) => {
+
+                    const {liked_movie_id} = doc.data()
+                    movielist.push({
+                        liked_movie_id});
+
+                });
+
+                // console.log(movielist)
+                // return null;
+            })
+            // .then(() => console.log(movielist))
+            .then(() => {
+
+                for(let i = 0; i < movielist.length; i++) {
+
+                    // const str = "[Check " + i + "] firebase={" + movielist[i].liked_movie_id + "} || app={" + id + "}"
+                    //
+                    // console.log(str)
+
+                    if (movielist[i].liked_movie_id === id) {
+                        this.setState({liked: true})
+                        tempCheck = true
+
+                        // this.changeButton(true)
+
+                        // this.setState({uriIcon: 'https://raw.githubusercontent.com/futuresimple/android-floating-action-button/master/screenshots/custom.png'})
+                        this.setState({uriIcon: '../../assets/icon/ValidButton.png'})
+                        // return tempCheck
+                        // console.log("TEMPCHECK = true")
+                        // console.log({tempCheck: tempCheck})
+                        break
+                    }
+                }
+
+
+            })
+
+        // if(movielist)
+
+
+        //
+        // console.log("---------------------- STEP ----------------------")
+        //
+        // console.log(movielist)
+        //
+        // console.log("---------------------- ---- ----------------------")
+
+        if(tempCheck === false){
+            this.setState({liked: false})
+            // this.changeButton(false)
+            // this.setState({uriCon: 'https://4.bp.blogspot.com/-gfkXY65adsU/WepEU5oTR5I/AAAAAAAAADI/ZhPMS8-hN6ALM_MT95OdTUWfCz5qw0iSQCLcBGAs/s1600/FB.png'})
+        }
+
+
+
+        return tempCheck
+        // console.log({COLLECTION_GET: movielist})
+
     }
 
     // //Getting Datas
     componentDidMount() {
+
+        const like = this.isItLiked(this.props.movieData.id)
+
+        // this.setState({liked: this.isItLiked(this.props.movieData.id)})
+        this.setState({liked: like})
+
+
+
+        // let uriIcon = ""
+        // if (this.state.liked){
+        //     uriIcon = 'https://raw.githubusercontent.com/futuresimple/android-floating-action-button/master/screenshots/custom.png'
+        // }else{
+        //     uriIcon = 'https://4.bp.blogspot.com/-gfkXY65adsU/WepEU5oTR5I/AAAAAAAAADI/ZhPMS8-hN6ALM_MT95OdTUWfCz5qw0iSQCLcBGAs/s1600/FB.png'
+        // }
+        //
+        // this.setState({uriIcon: uriIcon})
+
+        // this.getLikes = this.docs.onSnapshot(this.getStudentsData);
+
+
         this.setState({movieData: this.props.movieData})
         const id = this.props.movieData.id;
 
@@ -66,6 +341,12 @@ class DetailedMovie extends React.Component{
 
 
 
+        if(!this.state.init){
+            this.setState({uriIcon: this.getUri()})
+            this.changeButton(false)
+            this.changeButton(like)
+            this.setState({init: true})
+        }
 
 
 
@@ -74,6 +355,7 @@ class DetailedMovie extends React.Component{
             this.setState({
                 visible: !this.state.visible
             });
+
         }, 2000);
 
 
@@ -82,7 +364,36 @@ class DetailedMovie extends React.Component{
         },3000);
 
 
+        // this.changeButton(this.state.liked)
+
+
     }
+
+    // componentWillMount(){
+    //     // let uriIcon = ""
+    //     // const liked = this.isItLiked(this.props.movieData.id)
+    //     // // if (this.state.liked){
+    //     //
+    //     // console.log({tempCheck: liked})
+    //     //
+    //     // if(this.isItLiked(this.props.movieData.id) === true){
+    //     //     console.log("TRUE")
+    //     //     uriIcon = 'https://raw.githubusercontent.com/futuresimple/android-floating-action-button/master/screenshots/custom.png'
+    //     // }
+    //     // if(this.isItLiked(this.props.movieData.id) === false){
+    //     //     console.log("FALSE")
+    //     //     uriIcon = 'https://4.bp.blogspot.com/-gfkXY65adsU/WepEU5oTR5I/AAAAAAAAADI/ZhPMS8-hN6ALM_MT95OdTUWfCz5qw0iSQCLcBGAs/s1600/FB.png'
+    //     // }
+    //     //
+    //     //
+    //     // console.log("OUT")
+    //     //
+    //     // console.log({uriIcon: uriIcon})
+    //
+    //
+    //     // this.setState({uriIcon: this.getUri()})
+    //
+    // }
 
     setTimePassed() {
         this.setState({timePassed: true});
@@ -114,7 +425,7 @@ class DetailedMovie extends React.Component{
         let final = hour + " h " + min + " min"
 
         this.setState({runtime: final})
-        console.log({duration: final})
+        // console.log({duration: final})
     }
 
 
@@ -251,10 +562,12 @@ class DetailedMovie extends React.Component{
     showOverview = () => {
         if(this.state.textHidden){
             this.setState({numberOfLines: 0})
+            this.setState({buttonWidth: 50})
             this.setState({buttonText: 'moins'})
             this.setState({textHidden: false})
         }else{
             this.setState({numberOfLines: 3})
+            this.setState({buttonWidth: 40})
             this.setState({buttonText: 'plus'})
             this.setState({textHidden: true})
         }
@@ -273,7 +586,11 @@ class DetailedMovie extends React.Component{
         const playIcon = <Icon name="caretright" size={20} color="#000" />;
         const dlIcon = <Icon name="download" size={20} color="#fff" />;
 
-        if((this.state.frenchTrailer === undefined || this.state.upFrame === undefined || this.state.providersList === undefined || this.state.stackedLogos === undefined) && (!this.state.timePassed)){
+        if((this.state.frenchTrailer === undefined
+            || this.state.upFrame === undefined
+            || this.state.providersList === undefined
+            || this.state.stackedLogos === undefined
+            || this.state.uriIcon === undefined) && (!this.state.timePassed)){
 
             const { visible } = this.state;
             // console.log({trailer: this.state.frenchTrailer, frame: this.state.upFrame, provider: this.state.providersList})
@@ -287,7 +604,11 @@ class DetailedMovie extends React.Component{
 
             if(this.state.frenchTrailer === undefined && !this.state.providerUnavailable){
                 this.setState({providerUnavailable: true})
+
+                // this.changeButton(this.state.liked)
             }
+
+
 
 
             return (
@@ -331,7 +652,6 @@ class DetailedMovie extends React.Component{
 
 
                         {/*Description*/}
-                        {/*{this.state.overviewComponent}*/}
                         <View style={styles.overviewContainer}>
                             <Text
                                 style={styles.description}
@@ -349,7 +669,7 @@ class DetailedMovie extends React.Component{
 
                             <Pressable
                                 onPress={() => this.showOverview()}
-                                style={styles.plusButton}
+                                style={[styles.plusButton, {width: this.state.buttonWidth}]}
                             >
                                 <Text style={styles.buttonText}>{this.state.buttonText}</Text>
                             </Pressable>
@@ -363,6 +683,79 @@ class DetailedMovie extends React.Component{
                         <View style={styles.providersContainer} >
                             {this.state.downFrame}
                         </View>
+
+
+                        {/*{() => {*/}
+                        {/*    var uriIcon = ""*/}
+                        {/*    if (this.state.liked){*/}
+                        {/*        uriIcon = 'https://raw.githubusercontent.com/futuresimple/android-floating-action-button/master/screenshots/custom.png'*/}
+                        {/*    }else{*/}
+                        {/*        uriIcon = 'https://4.bp.blogspot.com/-gfkXY65adsU/WepEU5oTR5I/AAAAAAAAADI/ZhPMS8-hN6ALM_MT95OdTUWfCz5qw0iSQCLcBGAs/s1600/FB.png'*/}
+                        {/*    }*/}
+                        {/*}}*/}
+
+
+                        {/*<TouchableOpacity*/}
+                        {/*    activeOpacity={0.7}*/}
+                        {/*    onPress={() => {*/}
+                        {/*        if(!this.state.liked){*/}
+                        {/*            console.log({Status: this.state.liked})*/}
+                        {/*            this.addLikeToFirebase(this.props.movieData.id)*/}
+                        {/*        }else{*/}
+                        {/*            this.removeLikeFromFirebase(this.props.movieData.id)*/}
+                        {/*        }*/}
+                        {/*    }}*/}
+                        {/*    style={styles.touchableOpacityStyle}>*/}
+
+                        {/*    /!*<Image*!/*/}
+                        {/*    /!*    //We are making FAB using TouchableOpacity with an image*!/*/}
+                        {/*    /!*    //We are using online image here*!/*/}
+                        {/*    /!*    // source={{*!/*/}
+                        {/*    /!*    //     // uri:*!/*/}
+                        {/*    /!*    //     //     'https://4.bp.blogspot.com/-gfkXY65adsU/WepEU5oTR5I/AAAAAAAAADI/ZhPMS8-hN6ALM_MT95OdTUWfCz5qw0iSQCLcBGAs/s1600/FB.png',*!/*/}
+                        {/*    /!*    //     uri: this.state.uriIcon,*!/*/}
+                        {/*    /!*    // }}*!/*/}
+                        {/*    /!*    // source={require(this.state.uriIcon)}*!/*/}
+
+                        {/*    /!*    // source={require('uriIcon')}*!/*/}
+
+                        {/*    /!*    source={() => {*!/*/}
+                        {/*    /!*        if(!this.state.liked){*!/*/}
+                        {/*    /!*            return require('../../assets/icon/ValidButton.png')*!/*/}
+                        {/*    /!*        }else{*!/*/}
+                        {/*    /!*            return require('../../assets/icon/PlusButton.png')*!/*/}
+                        {/*    /!*        }*!/*/}
+                        {/*    /!*      }*!/*/}
+                        {/*    /!*    }*!/*/}
+
+                        {/*    /!*    {() => {*!/*/}
+                        {/*    /!*        if(!this.state.liked){*!/*/}
+                        {/*    /!*            return source={require('../../assets/icon/ValidButton.png')}*!/*/}
+                        {/*    /!*        )*!/*/}
+
+                        {/*    /!*        }else{*!/*/}
+                        {/*    /!*            return require('../../assets/icon/PlusButton.png')*!/*/}
+                        {/*    /!*        }*!/*/}
+                        {/*    /!*    }}*!/*/}
+                        {/*    /!*    //You can use you project image Example below*!/*/}
+                        {/*    /!*    //source={require('./images/float-add-icon.png')}*!/*/}
+                        {/*    /!*    style={styles.floatingButtonStyle}*!/*/}
+                            {/*/>*/}
+
+
+                        {/*    {() => {if(!this.state.liked){*/}
+                        {/*        return this.state.validButton*/}
+                        {/*    }else{*/}
+                        {/*        return this.state.plusButton*/}
+                        {/*        }*/}
+                        {/*           }*/}
+                        {/*    }*/}
+
+
+
+
+                        {/*</TouchableOpacity>*/}
+                            {this.state.floatingButton}
 
 
 
@@ -385,11 +778,16 @@ const styles = StyleSheet.create({
     },
 
     plusButton: {
+        backgroundColor: '#282828',
+        borderRadius: 15,
         // backgroundColor: '#7c7c7c',
         color: '#d73333',
-        height: 18,
-        justifyContent: 'flex-start',
-        alignItems: "flex-start",
+        // height: 18,
+        height: 25,
+        // width: 40,
+        // width: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
         marginBottom: 10,
     },
     buttonText: {
@@ -399,20 +797,20 @@ const styles = StyleSheet.create({
     overviewContainer: {
         // backgroundColor: '#606060',
         color: '#ffffff',
-        flexDirection: "row",
+        // flexDirection: "row",
         // justifyContent: "flex-end",
-        alignItems: "flex-end",
+        alignItems: "flex-start",
     },
 
 
-    pressable: {
-        paddingTop: -7,
-        backgroundColor: '#888888',
-        flex: 1,
-        height: 12,
-        justifyContent: 'flex-start',
-    },
-
+    // pressable: {
+    //     paddingTop: -7,
+    //     backgroundColor: '#888888',
+    //     flex: 1,
+    //     height: 12,
+    //     justifyContent: 'flex-start',
+    // },
+    //
 
 
 
@@ -541,6 +939,24 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
         justifyContent: "center",
 
+    },
+
+
+    touchableOpacityStyle: {
+        position: 'absolute',
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 30,
+        bottom: 30,
+    },
+
+    floatingButtonStyle: {
+        resizeMode: 'contain',
+        width: 50,
+        height: 50,
+        //backgroundColor:'black'
     },
 
 });

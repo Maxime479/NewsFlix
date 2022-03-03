@@ -5,6 +5,16 @@ import MovieList from "./MovieList";
 import {StatusBar} from "expo-status-bar";
 
 
+const padForList = (pad) => {
+
+    if(pad !== undefined ){
+        return pad
+    }else{
+        return 0
+    }
+}
+
+
 class Movie extends React.Component{
 
     constructor(props) {
@@ -29,6 +39,8 @@ class Movie extends React.Component{
 
 
 
+
+
     }
 
 
@@ -47,7 +59,7 @@ class Movie extends React.Component{
             const {navigation} = this.props;
             return(
 
-                <View style={styles.filmContainer}>
+                <View style={[styles.filmContainer, {marginVertical: this.props.optionalPad}]}>
 
                     <TouchableOpacity onPress={() => navigation.navigate('Details', {movieData: this.state.movieData})}>
                         <Image
