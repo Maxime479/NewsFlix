@@ -14,7 +14,7 @@ class MovieList extends React.Component{
         }
     }
 
-    // //Getting Datas
+    //Getting Datas
     componentDidMount() {
         axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`).then((response) => {
             // console.log(response.data.results);
@@ -53,32 +53,13 @@ class MovieList extends React.Component{
         setInterval(() => {
             this.setState({refreshing: false})
         }, 2000);
-
-
-
-
     }
 
 
     render() {
-
-        // const wait = (timeout) => {
-        //     return new Promise(resolve => setTimeout(resolve, timeout));
-        // }
-        //
-        //
-        // const [refreshing, setRefreshing] = React.useState(false);
-        //
-        // const onRefresh = React.useCallback(() => {
-        //     setRefreshing(true);
-        //     wait(2000).then(() => setRefreshing(false));
-        // }, []);
-
-
         return (
                 <View style={styles.mainContainer}>
                     <ScrollView
-                        // contentContainerStyle={styles.scrollView}
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.state.refreshing}
@@ -97,7 +78,7 @@ class MovieList extends React.Component{
                                 horizontal={true}
                                 // numColumns={3}
                                 data={this.state.popularMovies}
-                                renderItem={({item}) => <Movie movieData={item} navigation={this.props.navigation} />}
+                                renderItem={({item}) => <Movie movieData={item} userId={this.props.userId} navigation={this.props.navigation} />}
                             />
 
                         </View>
@@ -112,7 +93,7 @@ class MovieList extends React.Component{
                                 horizontal={true}
                                 // numColumns={3}
                                 data={this.state.topRatedFRMovies}
-                                renderItem={({item}) => <Movie movieData={item} navigation={this.props.navigation} />}
+                                renderItem={({item}) => <Movie movieData={item} userId={this.props.userId} navigation={this.props.navigation} />}
                             />
 
                         </View>
@@ -128,7 +109,7 @@ class MovieList extends React.Component{
                                 horizontal={true}
                                 // numColumns={3}
                                 data={this.state.upcomingMovies}
-                                renderItem={({item}) => <Movie movieData={item} navigation={this.props.navigation} />}
+                                renderItem={({item}) => <Movie movieData={item} userId={this.props.userId} navigation={this.props.navigation} />}
                             />
 
                         </View>
@@ -143,7 +124,7 @@ class MovieList extends React.Component{
                                 horizontal={true}
                                 // numColumns={3}
                                 data={this.state.nowPlayingMovies}
-                                renderItem={({item}) => <Movie movieData={item} navigation={this.props.navigation} />}
+                                renderItem={({item}) => <Movie movieData={item} userId={this.props.userId} navigation={this.props.navigation} />}
                             />
 
                         </View>
@@ -158,7 +139,7 @@ class MovieList extends React.Component{
                                 horizontal={true}
                                 // numColumns={3}
                                 data={this.state.topRatedMovies}
-                                renderItem={({item}) => <Movie movieData={item} navigation={this.props.navigation} />}
+                                renderItem={({item}) => <Movie movieData={item} userId={this.props.userId} navigation={this.props.navigation} />}
                             />
 
                         </View>

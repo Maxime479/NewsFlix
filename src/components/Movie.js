@@ -1,18 +1,5 @@
-import {Image, StyleSheet, Text, View, TouchableHighlight, TouchableOpacity} from "react-native";
+import {Image, StyleSheet, View, TouchableOpacity} from "react-native";
 import React from "react";
-import alert from "react-native-web/dist/exports/Alert";
-import MovieList from "./MovieList";
-import {StatusBar} from "expo-status-bar";
-
-
-const padForList = (pad) => {
-
-    if(pad !== undefined ){
-        return pad
-    }else{
-        return 0
-    }
-}
 
 
 class Movie extends React.Component{
@@ -35,12 +22,6 @@ class Movie extends React.Component{
         const poster = 'https://image.tmdb.org/t/p/w500' + this.props.movieData.poster_path
         this.setState({movieData: movieData})
         this.setState({posterUrl: poster})
-
-
-
-
-
-
     }
 
 
@@ -61,7 +42,7 @@ class Movie extends React.Component{
 
                 <View style={[styles.filmContainer, {marginVertical: this.props.optionalPad}]}>
 
-                    <TouchableOpacity onPress={() => navigation.navigate('Details', {movieData: this.state.movieData})}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Details', {movieData: this.state.movieData, userId: this.props.userId})}>
                         <Image
                             style={styles.moviePoster}
                             source={{uri: this.state.posterUrl}}

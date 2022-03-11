@@ -17,31 +17,15 @@ class DetailedMovie extends React.Component{
     constructor(props) {
         super(props);
 
-        this.docs = firebase.firestore().collection('likes')
+        // this.docs = firebase.firestore().collection('likes')
 
 
         this.state = {
 
+            userId: this.props.userId,
+            likesPath: 'users/' + this.props.userId + '/likes',
+
             buttonWidth: 40,
-
-            // validButton: <TouchableOpacity
-            //     activeOpacity={0.7}
-            //     onPress={() => {
-            //                     if(!this.state.liked){
-            //                         // console.log({Status: this.state.liked})
-            //                         this.addLikeToFirebase(this.props.movieData.id)
-            //                     }else{
-            //                         this.removeLikeFromFirebase(this.props.movieData.id)
-            //                     }
-            //                 }}
-            //     style={styles.touchableOpacityStyle}>
-            //
-            //     <Image
-            //         source={require('../../assets/icon/ValidButton.png')}
-            //         style={styles.floatingButtonStyle}
-            //     />
-            // </TouchableOpacity>,
-
 
             validButton: <TouchableOpacity
                 activeOpacity={0.7}
@@ -54,24 +38,6 @@ class DetailedMovie extends React.Component{
                 />
             </TouchableOpacity>,
 
-
-            // plusButton: <TouchableOpacity
-            //     activeOpacity={0.7}
-            //     onPress={() => {
-            //                     if(!this.state.liked){
-            //                         // console.log({Status: this.state.liked})
-            //                         this.addLikeToFirebase(this.props.movieData.id)
-            //                     }else{
-            //                         this.removeLikeFromFirebase(this.props.movieData.id)
-            //                     }
-            //                 }}
-            //     style={styles.touchableOpacityStyle}>
-            //
-            //     <Image
-            //         source={require('../../assets/icon/PlusButton.png')}
-            //         style={styles.floatingButtonStyle}
-            //     />
-            // </TouchableOpacity>,
 
 
             plusButton: <TouchableOpacity
@@ -112,37 +78,29 @@ class DetailedMovie extends React.Component{
 
     addLikeToFirebase = (id) => {
         this.changeButton(true)
-
+        if(this.state.liked){return}
 
         const db = firebase.firestore()
 
-        if(this.state.liked){return}
 
-
-
-
-        db.collection('likes').add({
+        db.collection(this.state.likesPath).add({
             liked_movie_id: id
             // creatAt: firebase.firestore.FieldValue.serverTimestamp(),
         })
 
         this.setState({liked: true})
 
-
-
-
-
-        // const liked = this.isItLiked(id)
-
     }
 
     removeLikeFromFirebase = (id) => {
-            this.changeButton(false)
 
+        this.changeButton(false)
         if(!this.state.liked){return}
 
+        const db = firebase.firestore()
 
-        let deleteQuery = this.docs.where('liked_movie_id', '==', id)
+
+        let deleteQuery = db.collection(this.state.likesPath).where('liked_movie_id', '==', id)
 
             deleteQuery.get()
                 .then(function(querySnapshot) {
@@ -150,23 +108,9 @@ class DetailedMovie extends React.Component{
                     doc.ref.delete()
                 })
             })
-                // .then(() => {const liked = this.isItLiked(id)})
-
-            // (
-            // //     {
-            // //     reference: 'eerrtt'
-            // //     // creatAt: firebase.firestore.FieldValue.serverTimestamp(),
-            // // // }).then(r => )
-            // // }
-            // )
-            // .then(() => {const liked = this.isItLiked(id)})
-
 
 
         this.setState({liked: false})
-
-        // const liked = this.isItLiked(id)
-
 
     }
 
@@ -183,7 +127,7 @@ class DetailedMovie extends React.Component{
         let movielist = [];
         let tempCheck = false;
 
-        firebase.firestore().collection('likes').get()
+        firebase.firestore().collection(this.state.likesPath).get()
             .then(querySnapshot => {
                 querySnapshot.forEach((doc) => {
                     const {liked_movie_id} = doc.data()
@@ -266,14 +210,10 @@ class DetailedMovie extends React.Component{
         });
 
 
-
-
-        if(!this.state.init){
+        if (!this.state.init) {
             this.changeButton(like)
             this.setState({init: true})
         }
-
-
 
 
         setInterval(() => {
@@ -284,9 +224,9 @@ class DetailedMovie extends React.Component{
         }, 2000);
 
 
-        setInterval( () => {
+        setInterval(() => {
             this.setTimePassed();
-        },3000);
+        }, 3000);
 
 
         // this.changeButton(this.state.liked)

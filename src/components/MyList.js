@@ -1,4 +1,4 @@
-import {FlatList, StyleSheet, Text, View, ScrollView, RefreshControl} from "react-native";
+import {FlatList, StyleSheet, Text, View, RefreshControl} from "react-native";
 import React from "react";
 import axios from 'axios';
 import Movie from "./Movie";
@@ -13,6 +13,9 @@ class MyList extends React.Component{
 
         this.state = {
 
+            userId: this.props.userId,
+            likesPath: 'users/' + this.props.userId + '/likes',
+
             init: false,
 
 
@@ -22,139 +25,37 @@ class MyList extends React.Component{
 
 
     getMyList = () => {
-        let movielist = [];
-        let idList= []
         let movieData = []
-
-
-        // firebase.firestore().collection('likes').get()
-        //     .then(querySnapshot => {
-        //         querySnapshot.forEach((doc) => {
-        //
-        //             const {liked_movie_id} = doc.data()
-        //             movielist.push({
-        //                 liked_movie_id})
-        //
-        //         })
-        //
-        //     })
-        //     .then(() => {
-        //         for(let i = 0; i < movielist.length; i++) {
-        //             idList.push(movielist[i].liked_movie_id)
-        //         }
-        //       }
-        //     ).then(() => {
-        //
-        //     for(let i=0; i<idList.length; i++){
-        //         // let tempMovieData = this.state.movieData
-        //
-        //
-        //         console.log("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
-        //
-        //         // GET detailed movie data
-        //         const infoRequestUrl = 'https://api.themoviedb.org/3/movie/' + idList[i] + '?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr'
-        //         axios.get(infoRequestUrl).then((response) => {
-        //             // console.log(response.data);
-        //             movieData.push(response.data)
-        //         })
-        //         //     .then(() => {
-        //         //     // console.log({MMMMMMMM: movieData})
-        //         //     this.setState({movieData: tempMovieData})
-        //         // })
-        //     }
-        //
-        //
-        // }).then(() => {
-        //         this.setState({movieData: movieData})
-        //         console.log({MMMMMMMM: movieData})
-        //     console.log("tttttttttttttttttttttttttttttttttttt")
-        //
-
-        let i=0
 
         let init = false
 
         //Compressed
-        firebase.firestore().collection('likes').get()
+        firebase.firestore().collection(this.state.likesPath).get()
             .then(querySnapshot => {
                 querySnapshot.forEach((doc) => {
 
                     const infoRequestUrl = 'https://api.themoviedb.org/3/movie/' + doc.data().liked_movie_id + '?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr'
                     axios.get(infoRequestUrl).then((response) => {
-                        const src = "------------" + i + "------------------"
-                        console.log({src});
-                        console.log({RESPONSE: response.data});
-                        console.log("------------------------------");
-
-                        // let temp = []
                         if(!init){
-
-                            // temp = response.data
                             movieData[0] = response.data
                             init = true
-
-
                         }else{
-                            // temp = this.state.movieData
-                            // temp.push(response.data)
                             movieData.push(response.data)
                         }
-
-                        // movieData[i] = response.data
-                        i++
-                        // movieData[i] = response.data
-                        // i++
-                        // movieData.push(response.data)
-
-                        console.log("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
                     }).then(() => {
-
-                        // return movieData
                         this.setState({movieData: movieData})
-                        console.log({FIIIIINNNNAAAALLLLL: movieData})
-
                     })
-
-
-
-                    // const {liked_movie_id} = doc.data()
-                    // movielist.push({
-                    //     liked_movie_id})
-                    //
                 })
 
             })
-
-        //     .then(() => {
-        //         this.setState({movieData: movieData})
-        //         console.log({MMMMMMMM: movieData})
-        //     console.log("tttttttttttttttttttttttttttttttttttt")
-        //
-        //
-        //
-        //
-        //
-        // })
     }
 
     // //Getting Datas
     componentDidMount() {
-
-        // this.setState({movieData: this.getMyList()})
         this.getMyList()
-
-        // const mylist =  this.getMyList()
-        //     .then(() => {console.log({MyList : mylist})})
-
-
-
-
-
-
-
-
-
     }
+
+
 
     refresh = () => {
         this.setState({refreshing: true})
@@ -162,8 +63,6 @@ class MyList extends React.Component{
         setInterval(() => {
             this.setState({refreshing: false})
         }, 2000);
-
-
 
 
     }
@@ -197,15 +96,6 @@ class MyList extends React.Component{
         }else {
             return (
                 <View style={styles.mainContainer}>
-                    {/*<ScrollView*/}
-                    {/*    // contentContainerStyle={styles.scrollView}*/}
-                    {/*    refreshControl={*/}
-                    {/*        <RefreshControl*/}
-                    {/*            refreshing={this.state.refreshing}*/}
-                    {/*            onRefresh={() => this.refresh()}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*>*/}
 
                         {/*Tendances actuelles*/}
                         <View style={styles.sectionContainer}>
@@ -217,7 +107,13 @@ class MyList extends React.Component{
                                 // horizontal={true}
                                 numColumns={3}
                                 data={this.state.movieData}
-                                renderItem={({item}) => <Movie optionalPad={5} movieData={item} navigation={this.props.navigation} />}
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={this.state.refreshing}
+                                        onRefresh={() => this.refresh()}
+                                    />
+                                }
+                                renderItem={({item}) => <Movie optionalPad={5} userId={this.props.userId} movieData={item} navigation={this.props.navigation} />}
                             />
 
                         </View>
