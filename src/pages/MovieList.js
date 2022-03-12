@@ -1,7 +1,7 @@
 import {FlatList, StyleSheet, Text, View, ScrollView, RefreshControl} from "react-native";
 import React from "react";
 import axios from 'axios';
-import Movie from "./Movie";
+import Movie from "../components/Movie";
 
 
 class MovieList extends React.Component{

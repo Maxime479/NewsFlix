@@ -1,9 +1,9 @@
 import {FlatList, StyleSheet, Text, View, RefreshControl} from "react-native";
 import React from "react";
 import axios from 'axios';
-import Movie from "./Movie";
+import Movie from "../components/Movie";
 import firebase from "../../database/firebase";
-import Loading from "./Loading";
+import Loading from "../components/Loading";
 
 
 class MyList extends React.Component{
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     },
 
     sectionContainer: {
-        marginLeft: 10,
+        // marginLeft: 10,
         marginVertical: 5,
         // // paddingTop: 20,
         // backgroundColor: '#381818',

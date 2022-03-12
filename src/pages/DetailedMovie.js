@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import AnimatedLoader from "react-native-animated-loader";
 import React from "react";
-import Loading from "./Loading.js";
+import Loading from "../components/Loading.js";
 
 import firebase from "../../database/firebase";
 

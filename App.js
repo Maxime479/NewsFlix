@@ -10,20 +10,21 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useFonts } from 'expo-font';
 
 
-import MovieList from './src/components/MovieList.js'
-import DetailedMovie from "./src/components/DetailedMovie.js";
+import MovieList from './src/pages/MovieList.js'
+import DetailedMovie from "./src/pages/DetailedMovie.js";
 
 import { LogBox } from 'react-native';
-import MyList from "./src/components/MyList";
+import MyList from "./src/pages/MyList";
 import React from "react";
 import NavBar from "./src/components/NavBar";
 import firebase from "./database/firebase";
-import Account from "./src/components/Account";
+import Account from "./src/pages/Account";
 
 
 
 
 import * as SecureStore from 'expo-secure-store';
+import Search from "./src/pages/Search";
 
 
 
@@ -37,7 +38,7 @@ function CustomTitle() {
 
 
 
-async function savePosition(navigation) {
+async function checkTokenStore(navigation) {
 
     const userId = await getToken('id')
     const userMail = await getToken('mail')
@@ -146,32 +147,32 @@ export default function App() {
     const homeNavOptions = {
         // headerTitle: (props) => <CustomTitle {...props} />,
         headerTitle: (props) => <CustomTitle {...props} />,
-        headerSearchBarOptions: {
-            obscureBackground: true,
-            autoFocus: false,
-            autoCapitalize: 'none',
-            barTintColor: '#6e6e6e',
-            hideNavigationBar: false,
-            placeholder: "Rechercher",
-            textColor: '#fff',
-            hintTextColor: '#fff',
-            headerIconColor: '#c43434',
-            shouldShowHintSearchIcon: true,
-            // onChangeText: (event) => setSearch(event.nativeEvent.text),
-            // onChangeText: (event) => searchData = event.nativeEvent.text,
-            // onChangeText: () => navigation.navigate('Details', {movieData: this.state.movieData}),
-            // onPress={() => navigation.navigate('Home')}
-            headerTransparent: false,
-            onPress: () => alert("hellooo"),
-        },
-        headerSearchBarStyle: {
-            backgroundColor: '#b61e1e',
-            width: 100,
-            height: 50,
-            color: '#b61e1e',
-            textColor: '#0c459a',
-        },
-        animation: "fade",
+        // headerSearchBarOptions: {
+        //     obscureBackground: true,
+        //     autoFocus: false,
+        //     autoCapitalize: 'none',
+        //     barTintColor: '#6e6e6e',
+        //     hideNavigationBar: false,
+        //     placeholder: "Rechercher",
+        //     textColor: '#fff',
+        //     hintTextColor: '#fff',
+        //     headerIconColor: '#c43434',
+        //     shouldShowHintSearchIcon: true,
+        //     // onChangeText: (event) => setSearch(event.nativeEvent.text),
+        //     // onChangeText: (event) => searchData = event.nativeEvent.text,
+        //     // onChangeText: () => navigation.navigate('Details', {movieData: this.state.movieData}),
+        //     // onPress={() => navigation.navigate('Home')}
+        //     headerTransparent: false,
+        //     // onPress: () => alert("hellooo"),
+        // },
+        // headerSearchBarStyle: {
+        //     backgroundColor: '#b61e1e',
+        //     width: 100,
+        //     height: 50,
+        //     color: '#b61e1e',
+        //     textColor: '#0c459a',
+        // },
+        animation: "none",
         headerLeft: ()=> null,
         headerBackVisible: false,
         headerStyle: {backgroundColor: '#000000'},
@@ -200,6 +201,7 @@ export default function App() {
                 <Stack.Screen name="Log" component={LogScreen} options={{headerShown: false}} />
                 <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}} />
                 <Stack.Screen name="Home" component={HomeScreen} options={homeNavOptions} />
+                <Stack.Screen name="Search" component={SearchScreen} options={homeNavOptions} />
                 <Stack.Screen name="Details" component={DetailsScreen} options={detailsNavOptions} />
                 <Stack.Screen name="MyList" component={MyListScreen} options={homeNavOptions} />
                 <Stack.Screen name="Account" component={AccountScreen} options={homeNavOptions} />
@@ -236,7 +238,7 @@ function StartScreen({ navigation }) {
         return null;
     }
 
-    savePosition(navigation)
+    checkTokenStore(navigation)
 
 
     // const componentId = "1"
@@ -917,6 +919,71 @@ function HomeScreen({ route, navigation }) {
 }
 
 
+function SearchScreen({ route, navigation }) {
+
+    const {userId} = route.params
+    const {userMail} = route.params
+
+    const [search, onChangeSearch] = React.useState(null);
+    const [opacity, onChangeFocus] = React.useState(null);
+
+    // let opacity = 1
+
+
+
+    return (
+
+            <View style={searchStyles.body}>
+
+
+                <TextInput
+                    style={searchStyles.input}
+                    onChangeText={text => onChangeSearch(text)}
+                    value={search}
+                    placeholder="Rechercher"
+                    keyboardType="default"
+                    placeholderTextColor='#989898'
+                    autoCapitalize="none"
+
+                    onFocus={() => onChangeFocus(0)}
+                    onEndEditing={() => onChangeFocus(1)}
+                    onSubmitEditing={() => onChangeFocus(1)}
+
+                    // For ANDROID
+                    autoComplete='off'
+
+                    // For IOS
+                    keyboardAppearance='dark'
+                    spellCheck={false}
+                    clearButtonMode='while-editing'
+                />
+
+
+
+                <Search
+                    navigation={navigation}
+                    userId={userId}
+                    search={search}
+                />
+
+
+                <NavBar
+                    navigation={navigation}
+                    userId={userId}
+                    userMail={userMail}
+                    selected={"search"}
+                    opacity={opacity}
+                />
+
+
+                <StatusBar style="auto" />
+            </View>
+
+
+    );
+}
+
+
 function MyListScreen({ route, navigation }) {
 
 
@@ -1062,6 +1129,43 @@ const homeStyles = StyleSheet.create({
         backgroundColor: '#919191',
         width: 80,
     },
+
+});
+
+const searchStyles = StyleSheet.create({
+
+    body: {
+        flex: 1,
+        backgroundColor: '#000000',
+        borderTopWidth: 1,
+        borderColor: 'rgba(255,255,255,0.63)',
+        alignItems: "center",
+
+
+    },
+
+    buttonTemp : {
+        backgroundColor: '#919191',
+        width: 80,
+    },
+
+
+    input: {
+        // flex: 1,
+        // backgroundColor: '#232323',
+        marginVertical: 20,
+        backgroundColor: '#282828',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '90%',
+        height: 50,
+        fontSize: 18,
+        borderRadius: 5,
+        paddingLeft: 10,
+        fontFamily: "Helvetica",
+        color: '#e7e7e7',
+    },
+
 
 });
 

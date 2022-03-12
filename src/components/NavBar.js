@@ -23,12 +23,16 @@ class NavBar extends React.Component{
         const {userMail} = this.props
 
         let homeColor = '#505050'
+        let searchColor = '#505050'
         let myListColor = '#505050'
         let accountColor = '#505050'
 
         switch (selected){
             case 'home':
                 homeColor = '#fff'
+                break
+            case 'search':
+                searchColor = '#fff'
                 break
             case 'myList':
                 myListColor = '#fff'
@@ -44,21 +48,83 @@ class NavBar extends React.Component{
 
 
         const navigation = this.props.navigation;
-        const homeIcon = <Icon name="home-outline" size={23} color={homeColor} />;
-        const starIcon = <Icon name="star-outline" size={23} color={myListColor} />;
-        const accountIcon = <Icon name="person-circle-outline" size={23} color={accountColor} />;
+
+
+
+        const homeIconEmpty = <Icon name="md-home-outline" size={23} color={homeColor} />
+        const searchIconEmpty = <Icon name="md-search" size={23} color={searchColor} />
+        const starIconEmpty = <Icon name="md-heart-outline" size={23} color={myListColor} />
+        // const starIcon = <Icon name="md-star-outline" size={23} color={myListColor} />
+        // const accountIcon = <Icon name="person-circle-outline" size={23} color={accountColor} />
+        const accountIconEmpty = <Icon name="md-person-outline" size={23} color={accountColor} />
+
+
+
+        const homeIconFull = <Icon name="md-home" size={23} color={homeColor} />
+        const searchIconFull = <Icon name="md-search" size={23} color={searchColor} />
+        const starIconFull = <Icon name="md-heart" size={23} color={myListColor} />
+        const accountIconFull = <Icon name="md-person" size={23} color={accountColor} />
+
+
+
+        let homeIcon = homeIconEmpty
+        let searchIcon = searchIconEmpty
+        let starIcon = starIconEmpty
+        let accountIcon = accountIconEmpty
+
+
+
+        switch (selected){
+            case 'home':
+                homeIcon = homeIconFull
+                break
+
+            case 'search':
+                searchIcon = searchIconFull
+                break
+
+            case 'myList':
+                starIcon = starIconFull
+                break
+
+            case 'account':
+                accountIcon = accountIconFull
+                break
+
+            default:
+                break
+        }
+
+
+        let opacity = this.props.opacity
+
+        if(this.props.opacity === undefined){
+            opacity = 1
+        }
+
+
+
+
 
 
         return(
 
-            <View style={mainButtonStyle.navBar}>
+            <View style={[mainButtonStyle.navBar, {opacity: opacity}]}>
 
 
                 <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('Home', {userId: userId, userMail: userMail})}>
                     <Text>
                         {homeIcon}
                     </Text>
-                    <Text style={[mainButtonStyle.textButton, {color: homeColor}]}>Accueil</Text>
+                    <Text style={[mainButtonStyle.textButton, {color: homeColor}]}>Accueil [{this.props.opacity}]</Text>
+                </Pressable>
+
+
+                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('Search', {userId: userId, userMail: userMail})}>
+                    <Text>
+                        {searchIcon}
+                    </Text>
+                    <Text style={[mainButtonStyle.textButton, {color: searchColor}]}>Rechercher</Text>
                 </Pressable>
 
 
@@ -96,8 +162,11 @@ const mainButtonStyle = StyleSheet.create({
         height: '7%',
 
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: "space-around",
         alignItems: "center",
+
+        position: 'absolute',
+        bottom: 0,
     },
 
     button: {
@@ -105,8 +174,8 @@ const mainButtonStyle = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        marginHorizontal: 30,
-        width: 60,
+        // marginHorizontal: 30,
+        // width: 60,
 
     },
 

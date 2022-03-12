@@ -1,9 +1,9 @@
 import {FlatList, StyleSheet, Text, View, RefreshControl, Pressable} from "react-native";
 import React from "react";
 import axios from 'axios';
-import Movie from "./Movie";
+import Movie from "../components/Movie";
 import firebase from "../../database/firebase";
-import Loading from "./Loading";
+import Loading from "../components/Loading";
 
 
 class Account extends React.Component{
