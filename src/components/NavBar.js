@@ -116,7 +116,7 @@ class NavBar extends React.Component{
                     <Text>
                         {homeIcon}
                     </Text>
-                    <Text style={[mainButtonStyle.textButton, {color: homeColor}]}>Accueil [{this.props.opacity}]</Text>
+                    <Text style={[mainButtonStyle.textButton, {color: homeColor}]}>Accueil</Text>
                 </Pressable>
 
 
