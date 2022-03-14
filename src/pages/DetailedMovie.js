@@ -2,7 +2,6 @@ import {Button, Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/AntDesign';
 import YoutubePlayer from 'react-native-youtube-iframe';
-import AnimatedLoader from "react-native-animated-loader";
 import React from "react";
 import Loading from "../components/Loading.js";
 

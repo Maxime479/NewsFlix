@@ -64,6 +64,15 @@ class Search extends React.Component{
 
     render() {
 
+        let margin = '15%'
+
+        if(this.props.opacity === 1) {
+            margin = '15%'
+        }
+        if(this.props.opacity === 0){
+            margin = 0
+        }
+
 
         if(this.props.search === null || this.state.foundMovies === undefined){
 
@@ -94,7 +103,7 @@ class Search extends React.Component{
                         {/*<View style={styles.sectionContainer}>*/}
 
                             <FlatList
-                                style={styles.list}
+                                style={[styles.list, {marginBottom: margin}]}
                                 // horizontal={true}
                                 numColumns={3}
                                 data={this.state.foundMovies}

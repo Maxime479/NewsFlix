@@ -105,7 +105,9 @@ class MyList extends React.Component{
                             <FlatList
                                 style={styles.list}
                                 // horizontal={true}
-                                numColumns={3}
+                                numColumns={1000}
+                                // keyExtractor={(item, index) => index}
+                                columnWrapperStyle={{ flexWrap: 'wrap', flex: 1, marginTop: 5, marginLeft: 10, flexGrow: 1, justifyContent: 'center'}}
                                 data={this.state.movieData}
                                 refreshControl={
                                     <RefreshControl
@@ -156,6 +158,7 @@ const styles = StyleSheet.create({
         // alignContent: 'space-around',
         // flexWrap: 'wrap',
         // flexGrow:0,
+
     },
     sectionTitle: {
         // paddingTop: 20,
@@ -167,6 +170,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     list: {
+        marginBottom: '30%',
         // paddingTop: 20,
         // backgroundColor: '#c5c5c5',
         // flex: 1,
@@ -176,7 +180,7 @@ const styles = StyleSheet.create({
         // alignContent: 'space-around',
         // flexWrap: 'wrap',
         // padding: 20,
-        flexGrow:0,
+        // flexGrow:0,
     }
 
 

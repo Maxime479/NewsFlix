@@ -266,36 +266,6 @@ function StartScreen({ navigation }) {
 
 }
 
-// async function storeData(userId, userMail){
-//     try {
-//         await AsyncStorage.setItem(
-//             '@mainStore:key',
-//             userId
-//         )
-//
-//         await AsyncStorage.setItem(
-//             '@mainStore:mail',
-//             userMail
-//         )
-//     } catch (error) {
-//         // Error saving data
-//     }
-// }
-
-// async function retrieveData(){
-//     try {
-//         const id = await AsyncStorage.getItem('@idStore:key');
-//         const mail = await AsyncStorage.getItem('@idStore:mail');
-//         if (id !== null) {
-//
-//             return [value, mail]
-//             // We have data!!
-//             // console.log(value);
-//         }
-//     } catch (error) {
-//         // Error retrieving data
-//     }
-// }
 
 
 function LogScreen({ navigation }) {
@@ -964,6 +934,7 @@ function SearchScreen({ route, navigation }) {
                     navigation={navigation}
                     userId={userId}
                     search={search}
+                    opacity={opacity}
                 />
 
 

@@ -62,7 +62,7 @@ class MovieList extends React.Component{
                     <ScrollView
                         refreshControl={
                             <RefreshControl
-                                refreshing={this.state.refreshing}
+                                refreshing ={this.state.refreshing}
                                 onRefresh={() => this.refresh()}
                             />
                         }
@@ -130,7 +130,7 @@ class MovieList extends React.Component{
                         </View>
 
                         {/*Les mieux notés*/}
-                        <View style={styles.sectionContainer}>
+                        <View style={[styles.sectionContainer,{marginBottom: '17%'}]}>
 
                             <Text style={styles.sectionTitle}>Les mieux notés</Text>
 
