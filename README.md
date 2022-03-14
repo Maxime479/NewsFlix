@@ -1,6 +1,6 @@
 # Bienvenue sur NewsFlix !
  
-NewsFlix est une application React Native construite à l'aide d'[expo](https://www.expo.io). Elle a pour objectif de servir d'outil de recherche de données sur n'importe quel film.
+NewsFlix est une application React Native construite à l'aide d'[Expo](https://www.expo.io). Elle a pour objectif de servir d'outil de recherche de données sur n'importe quel film.
 
 
 ## Tester l'application
