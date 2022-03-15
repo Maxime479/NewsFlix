@@ -22,8 +22,8 @@ function connect(loginData, passwordData, navigation) {
 
                         storeToken(id, mail).then(() => {
                             connected = true
-                            navigation.navigate('Home', {userId: id, userMail: mail})
-                        })
+                            navigation.navigate('Home', {userId: id})
+                        }).catch(error => {console.log("Erreur lors du stockage du Token\nErreur : " + error)})
                     }
 
                 }
@@ -33,7 +33,7 @@ function connect(loginData, passwordData, navigation) {
             })
         })
         .then(() => {
-
+            //Obligé de laisser une demi seconde de temps execution pour ne pas rencontrer une erreur avec les alertBox
             setTimeout(() => {
                 if (!connected) {
                     if (userCorrect) {
@@ -44,8 +44,7 @@ function connect(loginData, passwordData, navigation) {
                 }
             }, 500)
 
-
-        })
+        }).catch(error => {console.log("Erreur lors de la connexion de l'utilisateur\nErreur : " + error)})
 }
 
 export default connect;

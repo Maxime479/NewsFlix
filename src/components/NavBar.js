@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Text, View, TouchableHighlight, TouchableOpacity, Pressable} from "react-native";
+import {StyleSheet, Text, View, Pressable} from "react-native";
 import React from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -8,19 +8,16 @@ class NavBar extends React.Component{
         super(props);
 
         this.state = {
-
         }
-
     }
-
-
 
 
     render() {
 
+        //Affichage du texte et de l'icône sélectionné d'une manière différente dans la barre de navigation
+        // (icône plein et couleur blanche)
         const selected = this.props.selected
         const {userId} = this.props
-        const {userMail} = this.props
 
         let homeColor = '#505050'
         let searchColor = '#505050'
@@ -45,12 +42,11 @@ class NavBar extends React.Component{
         }
 
 
-
-
         const navigation = this.props.navigation;
 
 
 
+        //Liste des icônes non sélectionnés
         const homeIconEmpty = <Icon name="md-home-outline" size={23} color={homeColor} />
         const searchIconEmpty = <Icon name="md-search" size={23} color={searchColor} />
         const starIconEmpty = <Icon name="md-heart-outline" size={23} color={myListColor} />
@@ -60,6 +56,7 @@ class NavBar extends React.Component{
 
 
 
+        //Liste des icônes sélectionnés
         const homeIconFull = <Icon name="md-home" size={23} color={homeColor} />
         const searchIconFull = <Icon name="md-search" size={23} color={searchColor} />
         const starIconFull = <Icon name="md-heart" size={23} color={myListColor} />
@@ -71,7 +68,6 @@ class NavBar extends React.Component{
         let searchIcon = searchIconEmpty
         let starIcon = starIconEmpty
         let accountIcon = accountIconEmpty
-
 
 
         switch (selected){
@@ -104,15 +100,12 @@ class NavBar extends React.Component{
 
 
 
-
-
-
         return(
 
             <View style={[mainButtonStyle.navBar, {opacity: opacity}]}>
 
-
-                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('Home', {userId: userId, userMail: userMail})}>
+                {/*Bouton Accueil*/}
+                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('Home', {userId: userId})}>
                     <Text>
                         {homeIcon}
                     </Text>
@@ -120,7 +113,8 @@ class NavBar extends React.Component{
                 </Pressable>
 
 
-                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('Search', {userId: userId, userMail: userMail})}>
+                {/*Bouton Rechercher*/}
+                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('Search', {userId: userId})}>
                     <Text>
                         {searchIcon}
                     </Text>
@@ -128,7 +122,8 @@ class NavBar extends React.Component{
                 </Pressable>
 
 
-                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('MyList', {userId: userId, userMail: userMail})}>
+                {/*Bouton Ma Liste*/}
+                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('MyList', {userId: userId})}>
                     <Text>
                         {starIcon}
                     </Text>
@@ -136,18 +131,16 @@ class NavBar extends React.Component{
                 </Pressable>
 
 
-                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('Account', {userId: userId, userMail: userMail})}>
+                {/*Bouton Mon compte*/}
+                <Pressable style={mainButtonStyle.button} onPress={() => navigation.navigate('Account', {userId: userId})}>
                     <Text>
                         {accountIcon}
                     </Text>
                     <Text style={[mainButtonStyle.textButton, {color: accountColor}]}>Mon compte</Text>
                 </Pressable>
 
-
             </View>
-
         )
-
     }
 }
 
@@ -157,7 +150,6 @@ const mainButtonStyle = StyleSheet.create({
 
     navBar: {
         backgroundColor: '#151515',
-        // backgroundColor: '#282828',
         width: '100%',
         height: '7%',
 
@@ -170,13 +162,9 @@ const mainButtonStyle = StyleSheet.create({
     },
 
     button: {
-        // backgroundColor: '#282828',
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        // marginHorizontal: 30,
-        // width: 60,
-
     },
 
     textButton: {
@@ -184,14 +172,7 @@ const mainButtonStyle = StyleSheet.create({
         fontSize: 9,
     },
 
-
-
-
-
-
-});
-
-
+})
 
 
 export default NavBar;

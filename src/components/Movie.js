@@ -1,31 +1,23 @@
 import {Image, StyleSheet, View, TouchableOpacity} from "react-native";
 import React from "react";
 
-
+//Composant utilisé pour l'affichage sous forme de Liste
+//C'est donc une vignette cliquable qui amène vers les détails du film
 class Movie extends React.Component{
 
     constructor(props) {
         super(props);
 
         this.state = {
-
         }
-
     }
 
-
-
     componentDidMount() {
-
         const movieData = this.props.movieData
-        // console.log({movieData: this.props.movieData})
         const poster = 'https://image.tmdb.org/t/p/w500' + this.props.movieData.poster_path
         this.setState({movieData: movieData})
         this.setState({posterUrl: poster})
     }
-
-
-
 
 
     render() {
@@ -49,7 +41,6 @@ class Movie extends React.Component{
                         />
                     </TouchableOpacity>
                 </View>
-
             )
 
         }
@@ -57,28 +48,19 @@ class Movie extends React.Component{
 }
 
 
-
 const styles = StyleSheet.create({
 
-
     moviePoster: {
-        // width: 120,
-        // height: 178,
         width: 110,
         height: 150,
         borderRadius: 5,
-        // marginHorizontal: 2,
     },
     filmContainer: {
         width: 120,
-        // marginVertical: 7,
         marginHorizontal: -2,
 
     },
-
-});
-
-
+})
 
 
 export default Movie;

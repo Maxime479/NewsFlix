@@ -2,6 +2,8 @@ import {FlatList, StyleSheet, Text, View, ScrollView, RefreshControl} from "reac
 import React from "react";
 import axios from 'axios';
 import Movie from "../components/Movie";
+import Loading from "../components/Loading";
+import parseData from "../api/parseData";
 
 
 class MovieList extends React.Component{
@@ -14,50 +16,79 @@ class MovieList extends React.Component{
         }
     }
 
-    //Getting Datas
-    componentDidMount() {
-        axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`).then((response) => {
-            // console.log(response.data.results);
-            this.setState({popularMovies: response.data.results});
-        });
 
-        axios.get(`https://api.themoviedb.org/3/movie/upcoming?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`).then((response) => {
-            // console.log(response.data.results);
-            this.setState({upcomingMovies: response.data.results});
-        });
-
-        axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`).then((response) => {
-            // console.log(response.data.results);
-            this.setState({topRatedMovies: response.data.results});
-        });
-
-        axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr&region=FR`).then((response) => {
-            // console.log(response.data.results);
-            this.setState({topRatedFRMovies: response.data.results});
-        });
-
-        axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`).then((response) => {
-            // console.log(response.data.results);
-            this.setState({nowPlayingMovies: response.data.results});
-        });
-
-        // axios.get(`https://api.themoviedb.org/3/movie/latest?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`).then((response) => {
-        //     console.log({ApiResult: response.data.results});
-        //     this.setState({latestMovies: response.data.results});
-        // });
+    //Appelle toutes les fonctions d'appel API
+    getMultipleApiData = () => {
+        this.getPopularMovies()
+        this.getUpcomingMovies()
+        this.getTopRatedMovies()
+        this.getTopRatedFRMovies()
+        this.getNowPlayingMovies()
     }
 
+
+
+
+    //Récupère les films populaires actuellement
+    getPopularMovies = () => {
+        axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`)
+            .then((response) => { this.setState({popularMovies: parseData(response.data.results)}) })
+    }
+
+    //Récupère les films à venir bientôt
+    getUpcomingMovies = () => {
+        axios.get(`https://api.themoviedb.org/3/movie/upcoming?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`)
+            .then((response) => { this.setState({upcomingMovies: parseData(response.data.results)}) })
+    }
+
+    //Récupère les films les mieux notés de tous
+    getTopRatedMovies = () => {
+        axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`)
+            .then((response) => { this.setState({topRatedMovies: parseData(response.data.results)}) })
+    }
+
+    //Récupère les films les mieux notés de tous en France
+    getTopRatedFRMovies = () => {
+        axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr&region=FR`)
+            .then((response) => { this.setState({topRatedFRMovies: parseData(response.data.results)}) })
+    }
+
+    //Récupère les films actuellement au cinéma
+    getNowPlayingMovies = () => {
+        axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr`)
+            .then((response) => { this.setState({nowPlayingMovies: parseData(response.data.results)}) })
+    }
+
+
+    componentDidMount() {
+        this.getMultipleApiData()
+    }
+
+
+    //Option de rafraichissement de la page
     refresh = () => {
         this.setState({refreshing: true})
+        this.getMultipleApiData()
 
-        setInterval(() => {
+        setTimeout(() => {
             this.setState({refreshing: false})
         }, 2000);
     }
 
 
+
     render() {
-        return (
+        if((this.state.popularMovies || this.state.topRatedFRMovies || this.state.upcomingMovies || this.state.nowPlayingMovies || this.state.topRatedMovies ) === undefined){
+
+            return (
+                <View>
+                    <Loading/>
+                </View>
+            )
+
+        }else{
+
+            return (
                 <View style={styles.mainContainer}>
                     <ScrollView
                         refreshControl={
@@ -97,7 +128,6 @@ class MovieList extends React.Component{
                             />
 
                         </View>
-
 
                         {/*À venir*/}
                         <View style={styles.sectionContainer}>
@@ -148,7 +178,8 @@ class MovieList extends React.Component{
                     </ScrollView>
 
                 </View>
-            );
+            )
+        }
     }
 }
 
@@ -160,40 +191,20 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         justifyContent: "flex-start",
-        // backgroundColor: '#c41616',
     },
 
     sectionContainer: {
         marginLeft: 10,
         marginVertical: 5,
-        // paddingTop: 20,
-        // backgroundColor: '#381818',
-        // flex: 1,
-        // width: '100%',
-        // height: '100%',
-        // resizeMode: 'contain',
-        // alignContent: 'space-around',
-        // flexWrap: 'wrap',
-        // flexGrow:0,
     },
     sectionTitle: {
-        // paddingTop: 20,
         color: '#ffffff',
         fontSize: 20,
-        // fontWeight: 'Black',
         fontFamily: 'HelveticaBold',
         marginTop: 10,
         marginBottom: 5,
     },
     list: {
-        // paddingTop: 20,
-        // backgroundColor: '#c5c5c5',
-        // flex: 1,
-        // width: '100%',
-        // height: '100%',
-        // resizeMode: 'contain',
-        // alignContent: 'space-around',
-        // flexWrap: 'wrap',
         flexGrow:0,
     }
 

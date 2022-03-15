@@ -1,7 +1,6 @@
-import {FlatList, StyleSheet, Text, View, RefreshControl, Pressable} from "react-native";
 import React from "react";
-import axios from 'axios';
-import Movie from "../components/Movie";
+import {StyleSheet, Text, View, Pressable, TouchableHighlight} from "react-native";
+
 import firebase from "../../database/firebase";
 import Loading from "../components/Loading";
 
@@ -12,36 +11,28 @@ class Account extends React.Component{
         super(props);
 
         this.state = {
-
             userId: this.props.userId,
-            userMail: this.props.userMail,
             likesPath: 'users/' + this.props.userId + '/likes',
 
             init: false,
-
-
-
         }
     }
 
+    //Initialisation
+    componentDidMount() {
+        this.getAccountData()
+    }
 
+
+    //Récupère les données utilisateur du compte qui est connecté
     getAccountData = () => {
         let accountData = {}
-
-
-
-        //Compressed
         const db = firebase.firestore()
 
-
-
-
-        let getQuery = db.collection('users').where('mail', '==', this.props.userMail)
-
+        let getQuery = db.collection('users').where(firebase.firestore.FieldPath.documentId(), '==', this.props.userId)
         getQuery.get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    // doc.ref.delete()
                     const {mail} = doc.data()
                     const {login} = doc.data()
                     const {password} = doc.data()
@@ -53,26 +44,7 @@ class Account extends React.Component{
                     }
                 })
             }).then(()=> {this.setState({accountData: accountData})})
-
-
-
-
-
-        // db.collection(this.state.likesPath).add({
-        //     liked_movie_id: id
-        //     // creatAt: firebase.firestore.FieldValue.serverTimestamp(),
-        // })
-
-
-
-
-
-
-    }
-
-    // //Getting Datas
-    componentDidMount() {
-        this.getAccountData()
+            .catch(error => {console.log("Erreur lors de la récupération des données utilisateur\nErreur : " + error)})
     }
 
 
@@ -84,22 +56,23 @@ class Account extends React.Component{
 
         if(this.state.accountData === undefined){
 
-
             return (
                 <View>
                     <Loading/>
                 </View>
             )
+
         }else {
+
             return (
                 <View style={styles.mainContainer}>
 
-
                     <Text style={styles.title}>Mon Compte</Text>
-
 
                         <View style={styles.dataContainer}>
 
+
+                            {/*Affichage du mail*/}
                             <View style={[styles.sectionContainer, styles.startContainer]}>
                                     <Text style={styles.bold}>
                                         Mail
@@ -110,7 +83,7 @@ class Account extends React.Component{
                             </View>
 
 
-
+                            {/*Affichage du nom d'utilisateur*/}
                             <View style={styles.sectionContainer}>
                                     <Text style={styles.bold}>
                                         Nom d'utilisateur
@@ -121,7 +94,7 @@ class Account extends React.Component{
                             </View>
 
 
-
+                            {/*Affichage du mot de passe*/}
                             <View style={[styles.sectionContainer, styles.endContainer]}>
                                     <Text style={styles.bold}>
                                         Mot de passe
@@ -132,30 +105,22 @@ class Account extends React.Component{
                             </View>
 
 
-
-
-
                         </View>
 
-
-                    <Pressable style={styles.deconnectButton} onPress={() => navigation.navigate('Log')}>
+                    {/*Bouton de déconnexion */}
+                    <TouchableHighlight style={styles.deconnectButton}
+                                        onPress={() => navigation.navigate('Log')}
+                                        activeOpacity={0.6}
+                                        underlayColor="#400000"
+                    >
                         <Text style={styles.deconnectButtonText} >Déconnexion</Text>
-                    </Pressable>
-
-
-
+                    </TouchableHighlight>
 
                 </View>
             )
         }
-
-
-
-
     }
 }
-
-
 
 const styles = StyleSheet.create({
 
@@ -179,14 +144,12 @@ const styles = StyleSheet.create({
 
 
     sectionContainer: {
-        // // paddingTop: 20,
         backgroundColor: '#0a0a0a',
         alignItems: "flex-start",
         justifyContent:"center",
         borderWidth: 1,
         borderColor: '#494949',
         width: '100%',
-        // height: '60%',
         flexDirection: "column",
         paddingVertical: 15,
         paddingHorizontal: 15,
@@ -194,8 +157,6 @@ const styles = StyleSheet.create({
     dataContainer: {
         marginLeft: 10,
         marginVertical: 5,
-        // paddingHorizontal: 20,
-        // // paddingTop: 20,
         backgroundColor: '#0a0a0a',
         alignItems: "flex-start",
         borderRadius: 7,
@@ -203,21 +164,16 @@ const styles = StyleSheet.create({
         height: '60%',
     },
     title: {
-        // paddingTop: 20,
         color: '#ffffff',
         fontSize: 25,
-        // fontWeight: 'Black',
         fontFamily: 'HelveticaBold',
         marginTop: 10,
         marginBottom: 20,
     },
     data: {
-        // paddingTop: 20,
         color: '#cbcbcb',
         fontSize: 17,
-        // fontWeight: 'Black',
         fontFamily: 'Helvetica',
-        // marginVertical: 15,
     },
     bold: {
         fontWeight: "bold",
@@ -236,7 +192,6 @@ const styles = StyleSheet.create({
     deconnectButtonText: {
         fontWeight: "bold",
         fontSize: 18,
-        // fontWeight: 'Black',
         fontFamily: 'HelveticaBold',
         color: '#9a9a9a',
     },
@@ -244,6 +199,5 @@ const styles = StyleSheet.create({
 
 
 });
-
 
 export default Account;

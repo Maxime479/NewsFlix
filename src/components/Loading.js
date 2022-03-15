@@ -3,22 +3,39 @@ import React from "react";
 import AnimatedLoader from "react-native-animated-loader";
 import LottieView from 'lottie-react-native';
 
-
+//Affiche une animations de chargement en attendant que la page génère tous les composants
 class Loading extends React.Component{
 
     constructor(props) {
         super(props);
 
         this.state = {
+            loadingLimitTime: 10000,
+            stopLoading: false,
         }
+    }
 
+    componentDidMount(){
+        setTimeout(() => {
+            this.setState({stopLoading: true})
+        }, this.state.loadingLimitTime);
     }
 
 
 
     render() {
-            return(
 
+        //Au bout de 10 secondes, si le composant n'est pas chargé on affiche un message d'erreur pour ne pas bloquer l'utilisateur
+        if(this.state.stopLoading){
+
+            return(
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>Erreur lors du chargement.. 😥</Text>
+                </View>
+            )
+
+        }else{
+            return(
 
                 <View>
                     <AnimatedLoader
@@ -30,7 +47,6 @@ class Loading extends React.Component{
                     >
                         <Text>Loading...</Text>
                     </AnimatedLoader>
-
 
 
                     {/*<LottieView*/}
@@ -51,10 +67,9 @@ class Loading extends React.Component{
                     {/*/>*/}
                 </View>
             )
+        }
     }
 }
-
-
 
 const styles = StyleSheet.create({
 
@@ -63,9 +78,22 @@ const styles = StyleSheet.create({
         height: 100,
     },
 
-});
+    errorContainer : {
+        justifyContent: "center",
+        alignItems: "center",
+        height: '100%',
 
+    },
 
+    errorText : {
+        marginBottom: 130,
+        color: '#fff',
+        fontFamily: "Roboto",
+        fontSize: 20,
+
+    },
+
+})
 
 
 export default Loading;

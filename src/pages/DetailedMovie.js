@@ -7,17 +7,12 @@ import Loading from "../components/Loading.js";
 
 import firebase from "../../database/firebase";
 
-// const plusButton = '../../assets/icon/PlusButton.png'
-// const validButton = '../../assets/icon/ValidButton.png'
-
-
 class DetailedMovie extends React.Component{
 
     constructor(props) {
         super(props);
 
         // this.docs = firebase.firestore().collection('likes')
-
 
         this.state = {
 
@@ -38,7 +33,6 @@ class DetailedMovie extends React.Component{
             </TouchableOpacity>,
 
 
-
             plusButton: <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => this.addLikeToFirebase(this.props.movieData.id)}
@@ -50,19 +44,14 @@ class DetailedMovie extends React.Component{
             </TouchableOpacity>,
 
 
-
-
-
             init: false,
 
-            // posterUrl: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path,
             upFrame: <Image style={styles.moviePoster} source={{uri: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path}} />,
-            downFrame: <View></View>,
+            downFrame: <View/>,
             videoDisplayed: false,
             providersDisplayed: false,
 
 
-            visible: false,
             providerUnavailable: false,
             timePassed: false,
 
@@ -74,45 +63,71 @@ class DetailedMovie extends React.Component{
         this.addLikeToFirebase = this.addLikeToFirebase.bind(this)
     }
 
+    //Initialisation des données
+    componentDidMount() {
 
-    addLikeToFirebase = (id) => {
-        this.changeButton(true)
-        if(this.state.liked){return}
+        const like = this.isItLiked(this.props.movieData.id)
 
-        const db = firebase.firestore()
+        this.setState({liked: like})
+
+        const id = this.props.movieData.id;
 
 
-        db.collection(this.state.likesPath).add({
-            liked_movie_id: id
-            // creatAt: firebase.firestore.FieldValue.serverTimestamp(),
-        })
+        this.getRuntime(id)
 
-        this.setState({liked: true})
+        this.getProviders(id)
 
+        this.getYtLink(id)
+
+
+        //Modifie l'apparence du bouton de like en fonction du statut du film dans la base de donnée
+        if (!this.state.init) {
+            this.changeButton(like)
+            this.setState({init: true})
+        }
+
+
+        //Timer avant lequel la page ne doit pas être affiché
+        setTimeout(() => {
+            this.setState({timePassed: true})
+        }, 3000);
     }
 
-    removeLikeFromFirebase = (id) => {
 
+
+    //Ajoute l'id du film dans la base de donnée
+    addLikeToFirebase = (id) => {
+        this.changeButton(true)
+
+        //Annule l'action si le film est déjà liké
+        if(this.state.liked){return}
+
+        firebase.firestore().collection(this.state.likesPath).add({
+            liked_movie_id: id
+            // creatAt: firebase.firestore.FieldValue.serverTimestamp(),
+        }).then(() => {this.setState({liked: true})})
+            .catch(error => {console.log("Erreur lors de l'ajout du film à la liste sur la base de donnée\nErreur : " + error)})
+    }
+
+    //Retire l'id du film de la base de donnée
+    removeLikeFromFirebase = (id) => {
         this.changeButton(false)
+
+        //Annule l'action si le film n'est pas déjà liké
         if(!this.state.liked){return}
 
-        const db = firebase.firestore()
-
-
-        let deleteQuery = db.collection(this.state.likesPath).where('liked_movie_id', '==', id)
+        let deleteQuery = firebase.firestore().collection(this.state.likesPath).where('liked_movie_id', '==', id)
 
             deleteQuery.get()
                 .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    doc.ref.delete()
+                    doc.ref.delete().then(() => {this.setState({liked: false})})
+                        .catch(error => {console.log("Erreur lors de la suppression du film de la liste sur la base de donnée\nErreur : " + error)})
                 })
-            })
-
-
-        this.setState({liked: false})
-
+            }).catch(error => {console.log("Erreur lors du parcours de la réponse de firebase dans la fonction removeLikeFromFirebase\nErreur : " + error)})
     }
 
+    //Change l'apparence du bouton
     changeButton = (liked) => {
         if(liked){
             this.setState({floatingButton: this.state.validButton})
@@ -121,6 +136,7 @@ class DetailedMovie extends React.Component{
         }
     }
 
+    //Vérifie si le film est présent dans la liste de likes de l'utilisateur
     isItLiked = (id) => {
 
         let movielist = [];
@@ -135,6 +151,7 @@ class DetailedMovie extends React.Component{
             })
             .then(() => {
                 for(let i = 0; i < movielist.length; i++) {
+                    // Outil de débogage laissé en commentaire au cas où le bug des likes reviendrait
                     // const str = "[Check " + i + "] firebase={" + movielist[i].liked_movie_id + "} || app={" + id + "}"
                     // console.log(str)
 
@@ -147,127 +164,34 @@ class DetailedMovie extends React.Component{
                     }
                 }
             })
-
-        // if(movielist)
-
-
-        //
-        // console.log("---------------------- STEP ----------------------")
-        //
-        // console.log(movielist)
-        //
-        // console.log("---------------------- ---- ----------------------")
+            .catch(error => {console.log("Erreur lors de la vérification de la fonction isItLiked()\nErreur : " + error)})
 
         if(tempCheck === false){
             this.setState({liked: false})
-            // this.changeButton(false)
-            // this.setState({uriCon: 'https://4.bp.blogspot.com/-gfkXY65adsU/WepEU5oTR5I/AAAAAAAAADI/ZhPMS8-hN6ALM_MT95OdTUWfCz5qw0iSQCLcBGAs/s1600/FB.png'})
         }
-
-
 
         return tempCheck
-        // console.log({COLLECTION_GET: movielist})
-
     }
 
-    // //Getting Datas
-    componentDidMount() {
-
-        const like = this.isItLiked(this.props.movieData.id)
-
-        // this.setState({liked: this.isItLiked(this.props.movieData.id)})
-        this.setState({liked: like})
-
-        this.setState({movieData: this.props.movieData})
-        const id = this.props.movieData.id;
-
-        // GET date from detailed movie data
-        const infoRequestUrl = 'https://api.themoviedb.org/3/movie/' + id + '?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr'
-        axios.get(infoRequestUrl).then((response) => {
-            // console.log(response.data);
-            this.getRuntime(response.data.runtime)
-        });
-
-        // GET accessible providers
-        const distribRequestUrl = 'https://api.themoviedb.org/3/movie/' + id + '/watch/providers?api_key=ecf11955d7eae31ea3a9043b8c70e99a'
-        axios.get(distribRequestUrl).then((response) => {
 
 
-            // console.log({distrib: response.data.results});
-            this.extractProviders(response.data.results)
-            // console.log('Hello');
-            // this.getRuntime(response.data.runtime)
-        });
-
-        // GET yt trailer link
+    //Récupère le lien de la vidéo youtube du Trailer
+    getYtLink = (id) => {
         const videoRequestUrl = 'https://api.themoviedb.org/3/movie/' + id + '/videos?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr'
         axios.get(videoRequestUrl).then((response) => {
-            // console.log(response.data.results);
-            this.setState({movieVideos: response.data.results});
-            this.getTrailer(response.data.results)
-        });
+            const allMovieTrailers = response.data.results
 
-
-        if (!this.state.init) {
-            this.changeButton(like)
-            this.setState({init: true})
-        }
-
-
-        setInterval(() => {
-            this.setState({
-                visible: !this.state.visible
-            });
-
-        }, 2000);
-
-
-        setInterval(() => {
-            this.setTimePassed();
-        }, 3000);
-
-
-        // this.changeButton(this.state.liked)
-
-
-    }
-
-
-    setTimePassed() {
-        this.setState({timePassed: true});
-    }
-
-    getTrailer = (movieVideos) => {
-
-        let frenchTrailer;
-        let ytBaseUrl = 'https://www.youtube.com/watch?v='
-
-        for(let i=0; i<movieVideos.length; i++){
-            if(movieVideos[i].name.includes("VF")){
-                // frenchTrailer = ytBaseUrl + movieVideos[i].key
-                // this.setState({frenchTrailer: frenchTrailer})
-                const key = movieVideos[i].key
-                const slicedKey = key.slice(1, key.length)
-                this.setState({frenchTrailer: key})
-                // console.log({key: key})
-                // console.log({slicedKey: slicedKey})
-                return
+            //Trouve la vidéo en français
+            for(let i=0; i<allMovieTrailers.length; i++){
+                if(allMovieTrailers[i].name.includes("VF")){
+                    this.setState({frenchTrailer: allMovieTrailers[i].key})
+                    return
+                }
             }
-        }
+        }).catch(error => {console.log("Erreur lors de la récupération du lien de la vidéo\nErreur : " + error)})
     }
 
-    getRuntime = (strRuntime) => {
-        const runtime = Number(strRuntime)
-        let min = runtime%60;
-        let hour = (runtime - min)/60
-        let final = hour + " h " + min + " min"
-
-        this.setState({runtime: final})
-        // console.log({duration: final})
-    }
-
-
+    //Action qui remplace l'image de fond par un youtube-iframe, ainsi la vidéo du trailer est lue
     showVideo = () => {
 
         if(this.state.providerUnavailable){
@@ -290,24 +214,53 @@ class DetailedMovie extends React.Component{
         this.setState({upFrame: toSet})
     }
 
-    showProviders = () => {
 
-        const empty = <View></View>
-        const providers = this.state.stackedLogos
 
-        let toSet
 
-        if(this.state.providersDisplayed){
-            toSet = empty
-            this.setState({providersDisplayed: false})
-        }else{
-            toSet = providers
-            this.setState({providersDisplayed: true})
-        }
+    //Modifie les données brut pour afficher la durée du film sous le format HH/MM
+    getRuntime = (id) => {
 
-        this.setState({downFrame: toSet})
+        const infoRequestUrl = 'https://api.themoviedb.org/3/movie/' + id + '?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr'
+        axios.get(infoRequestUrl).then((response) => {
+            const strRuntime = response.data.runtime
+
+            const runtime = Number(strRuntime)
+            let min = runtime%60;
+            let hour = (runtime - min)/60
+            let final = hour + " h " + min + " min"
+
+            this.setState({runtime: final})
+        }).catch(error => {console.log("Erreur lors de la récupération de la durée du film\nErreur : " + error)})
     }
 
+
+    //Affichage alterné en version restreinte ou complète du synopsis
+    showOverview = () => {
+        if(this.state.textHidden){
+            this.setState({numberOfLines: 0})
+            this.setState({buttonWidth: 50})
+            this.setState({buttonText: 'moins'})
+            this.setState({textHidden: false})
+        }else{
+            this.setState({numberOfLines: 3})
+            this.setState({buttonWidth: 40})
+            this.setState({buttonText: 'plus'})
+            this.setState({textHidden: true})
+        }
+
+    }
+
+
+
+    //Appel API pour récupérer les différents services de streaming possédant le film
+    getProviders = (id) => {
+        const distribRequestUrl = 'https://api.themoviedb.org/3/movie/' + id + '/watch/providers?api_key=ecf11955d7eae31ea3a9043b8c70e99a'
+        axios.get(distribRequestUrl).then((response) => {
+            this.extractProviders(response.data.results)
+        }).catch(error => {console.log("Erreur lors de la récupération des services de streaming\nErreur : " + error)})
+    }
+
+    //Trie la liste des services de streaming en prenant en priorité la liste France si elle est disponible
     extractProviders = (providersData) => {
 
         let list, providers
@@ -345,13 +298,11 @@ class DetailedMovie extends React.Component{
 
         if(!listFound){
             list = providersData[Object.keys(providersData)[0]]
-            listFound = true
         }
 
 
 
         let providerFound = false
-
 
         if(list.flatrate !== undefined && !providerFound){
             providers = list.flatrate
@@ -365,52 +316,42 @@ class DetailedMovie extends React.Component{
 
         if(!providerFound){
             providers = list.rent
-            providerFound = true
         }
 
 
-
-
-
-
-        // console.log({LIST: list})
-        // console.log({PROVIDER: providers})
-
         this.stackLogos(providers)
-        // console.log({PROV: providers})
-
         this.setState({providersList: providers})
-
     }
 
-
+    //Cré un composant qui regroupe tous les logos pour optimiser l'affichage en cas d'appui sur le bouton Télécharger
     stackLogos = (providersList) => {
 
         let stackedLogos = []
 
-        // let inn = <View> <Image style={styles.distribLogo} source={{uri: 'https://image.tmdb.org/t/p/w500' + providersList[i].logo_path}} /> <Text>providersList[i].provider_name</Text></View>
-
         for(let i=0; i<providersList.length; i++){
             stackedLogos.push(<Image style={styles.distribLogo} source={{uri: 'https://image.tmdb.org/t/p/w500' + providersList[i].logo_path}} />)
-            // stackedLogos.push( <View> <Image style={styles.distribLogo} source={{uri: 'https://image.tmdb.org/t/p/w500' + providersList[i].logo_path}} /> <Text>providersList[i].provider_name</Text></View>)
         }
 
         this.setState({stackedLogos: stackedLogos})
     }
 
-    showOverview = () => {
-        if(this.state.textHidden){
-            this.setState({numberOfLines: 0})
-            this.setState({buttonWidth: 50})
-            this.setState({buttonText: 'moins'})
-            this.setState({textHidden: false})
+    //Affiche les différents services de streaming possédant le film (bouton Télécharger)
+    showProviders = () => {
+
+        const empty = <View/>
+        const providers = this.state.stackedLogos
+
+        let toSet
+
+        if(this.state.providersDisplayed){
+            toSet = empty
+            this.setState({providersDisplayed: false})
         }else{
-            this.setState({numberOfLines: 3})
-            this.setState({buttonWidth: 40})
-            this.setState({buttonText: 'plus'})
-            this.setState({textHidden: true})
+            toSet = providers
+            this.setState({providersDisplayed: true})
         }
 
+        this.setState({downFrame: toSet})
     }
 
 
@@ -419,25 +360,19 @@ class DetailedMovie extends React.Component{
     render() {
 
         const movieData = this.props.movieData
-        // const posterUrl = 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path
         const date = movieData.release_date.slice(0, 4)
 
         const playIcon = <Icon name="caretright" size={20} color="#000" />;
         const dlIcon = <Icon name="download" size={20} color="#fff" />;
 
-        if((this.state.frenchTrailer === undefined
-            || this.state.upFrame === undefined
-            || this.state.providersList === undefined
-            || this.state.stackedLogos === undefined) && (!this.state.timePassed)){
+            if((this.state.frenchTrailer || this.state.upFrame || this.state.providersList || this.state.stackedLogos ) === undefined && (!this.state.timePassed)){
 
-            const { visible } = this.state;
-            // console.log({trailer: this.state.frenchTrailer, frame: this.state.upFrame, provider: this.state.providersList})
-
-            return (
+                return (
                 <View>
                     <Loading/>
                 </View>
             )
+
         }else{
 
             if(this.state.frenchTrailer === undefined && !this.state.providerUnavailable){
@@ -526,12 +461,12 @@ class DetailedMovie extends React.Component{
                         {/*My List + button*/}
                             {this.state.floatingButton}
 
-
-
                     </View>
                 </View>
             )
+
         }
+
     }
 }
 
@@ -564,22 +499,9 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     overviewContainer: {
-        // backgroundColor: '#606060',
         color: '#ffffff',
-        // flexDirection: "row",
-        // justifyContent: "flex-end",
         alignItems: "flex-start",
     },
-
-
-    // pressable: {
-    //     paddingTop: -7,
-    //     backgroundColor: '#888888',
-    //     flex: 1,
-    //     height: 12,
-    //     justifyContent: 'flex-start',
-    // },
-    //
 
 
 
@@ -618,7 +540,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "column",
         marginHorizontal: 10,
-        // alignItems: "center",
         justifyContent: "flex-start",
         alignContent: "flex-start",
         alignItems: "flex-start",
@@ -637,10 +558,6 @@ const styles = StyleSheet.create({
     buttonIcon: {
         fontSize: 24,
         fontFamily: 'Roboto',
-    },
-    playText: {
-        // marginBottom: 25,
-
     },
     startTextButton: {
         color: '#000000',
@@ -661,7 +578,6 @@ const styles = StyleSheet.create({
     dlTextButton: {
         color: '#ffffff',
         fontSize: 17,
-        // fontWeight: "bold",
         fontFamily: 'Helvetica',
     },
 
@@ -677,7 +593,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: '100%',
         height: 20,
-        // marginHorizontal: 20,
     },
     year: {
         color: '#989898',
@@ -703,7 +618,6 @@ const styles = StyleSheet.create({
 
 
     providersContainer: {
-        // backgroundColor: '#000000',
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "center",
@@ -725,7 +639,6 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         width: 50,
         height: 50,
-        //backgroundColor:'black'
     },
 
 });

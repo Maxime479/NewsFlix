@@ -5,7 +5,6 @@ function register(mailData, loginData, passwordData, passwordConfData, navigatio
 
 
     // console.log('getDATA: ' + mailData + ' ' + loginData + ' ' + passwordData + ' ' + passwordConfData)
-
     let accountExist = false
     let userExist = false
     let passwordsMatch = false
@@ -33,7 +32,6 @@ function register(mailData, loginData, passwordData, passwordConfData, navigatio
                 const {mail} = doc.data()
                 const {login} = doc.data()
                 // console.log('DATA: ' + mail + ' ' + login)
-                // const id = doc.id
 
                 if (mailData === mail) {
                     accountExist = true
@@ -59,8 +57,8 @@ function register(mailData, loginData, passwordData, passwordConfData, navigatio
                             firebase.firestore().collection('users').add({
                                 mail: mailData,
                                 login: loginData,
-                                password: passwordData
-                                // creatAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                password: passwordData,
+                                creatAt: firebase.firestore.FieldValue.serverTimestamp(),
                             })
 
                             registered = true
@@ -92,7 +90,7 @@ function register(mailData, loginData, passwordData, passwordConfData, navigatio
                                     })
 
 
-                                    navigation.navigate('Home', {userId: id, userMail: mail})
+                                    navigation.navigate('Home', {userId: id})
 
                                 }
 
@@ -105,7 +103,7 @@ function register(mailData, loginData, passwordData, passwordConfData, navigatio
                     })
             }
 
-        })
+        }).catch(error => {console.log("Erreur lors de l'enregistrement du compte d'un nouvel utilisateur\nErreur : " + error)})
 }
 
 export default register;

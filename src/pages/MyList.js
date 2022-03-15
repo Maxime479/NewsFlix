@@ -4,6 +4,7 @@ import axios from 'axios';
 import Movie from "../components/Movie";
 import firebase from "../../database/firebase";
 import Loading from "../components/Loading";
+import parseData from "../api/parseData";
 
 
 class MyList extends React.Component{
@@ -23,17 +24,23 @@ class MyList extends React.Component{
         }
     }
 
+    //Initialisation
+    componentDidMount() {
+        this.getMyList()
+    }
 
+
+    //Récupération la liste de favoris de l'utilisateur
     getMyList = () => {
         let movieData = []
 
         let init = false
 
-        //Compressed
         firebase.firestore().collection(this.state.likesPath).get()
             .then(querySnapshot => {
                 querySnapshot.forEach((doc) => {
 
+                    //Récupération des informations pour chaque film trouvé
                     const infoRequestUrl = 'https://api.themoviedb.org/3/movie/' + doc.data().liked_movie_id + '?api_key=ecf11955d7eae31ea3a9043b8c70e99a&language=fr'
                     axios.get(infoRequestUrl).then((response) => {
                         if(!init){
@@ -43,50 +50,27 @@ class MyList extends React.Component{
                             movieData.push(response.data)
                         }
                     }).then(() => {
-                        this.setState({movieData: movieData})
-                    })
+                        this.setState({movieData: parseData(movieData)})
+                    }).catch(error => {console.log("Erreur lors de l'enregistrement de la liste\nErreur : " + error)})
                 })
 
-            })
-    }
-
-    // //Getting Datas
-    componentDidMount() {
-        this.getMyList()
+            }).catch(error => {console.log("Erreur lors de la récupération de la liste\nErreur : " + error)})
     }
 
 
-
+    //Option de rafraichissement de la page
     refresh = () => {
         this.setState({refreshing: true})
 
-        setInterval(() => {
+        setTimeout(() => {
             this.setState({refreshing: false})
+            this.getMyList()
         }, 2000);
-
-
     }
 
 
     render() {
-
-        // const wait = (timeout) => {
-        //     return new Promise(resolve => setTimeout(resolve, timeout));
-        // }
-        //
-        //
-        // const [refreshing, setRefreshing] = React.useState(false);
-        //
-        // const onRefresh = React.useCallback(() => {
-        //     setRefreshing(true);
-        //     wait(2000).then(() => setRefreshing(false));
-        // }, []);
-
-
         if(this.state.movieData === undefined){
-
-            const { visible } = this.state;
-            // console.log({trailer: this.state.frenchTrailer, frame: this.state.upFrame, provider: this.state.providersList})
 
             return (
                 <View>
@@ -102,11 +86,10 @@ class MyList extends React.Component{
 
                             <Text style={styles.sectionTitle}>Ma Liste</Text>
 
+                            {/*Liste qui affiche le composant film à chaque itération d'objet de movieData*/}
                             <FlatList
                                 style={styles.list}
-                                // horizontal={true}
                                 numColumns={1000}
-                                // keyExtractor={(item, index) => index}
                                 columnWrapperStyle={{ flexWrap: 'wrap', flex: 1, marginTop: 5, marginLeft: 10, flexGrow: 1, justifyContent: 'center'}}
                                 data={this.state.movieData}
                                 refreshControl={
@@ -119,10 +102,6 @@ class MyList extends React.Component{
                             />
 
                         </View>
-
-
-
-                    {/*</ScrollView>*/}
 
                 </View>
             )
@@ -142,45 +121,23 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         justifyContent: "flex-start",
-        // backgroundColor: '#c41616',
     },
 
     sectionContainer: {
-        // marginLeft: 10,
         marginVertical: 5,
-        // // paddingTop: 20,
-        // backgroundColor: '#381818',
         alignItems: "center",
-        // flex: 1,
-        // width: '100%',
-        // height: '100%',
-        // resizeMode: 'contain',
-        // alignContent: 'space-around',
-        // flexWrap: 'wrap',
-        // flexGrow:0,
-
     },
+
     sectionTitle: {
-        // paddingTop: 20,
         color: '#ffffff',
         fontSize: 25,
-        // fontWeight: 'Black',
         fontFamily: 'HelveticaBold',
         marginTop: 10,
         marginBottom: 5,
     },
+
     list: {
         marginBottom: '30%',
-        // paddingTop: 20,
-        // backgroundColor: '#c5c5c5',
-        // flex: 1,
-        // width: '100%',
-        // height: '100%',
-        // resizeMode: 'contain',
-        // alignContent: 'space-around',
-        // flexWrap: 'wrap',
-        // padding: 20,
-        // flexGrow:0,
     }
 
 

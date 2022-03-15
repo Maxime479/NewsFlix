@@ -1,29 +1,33 @@
+import React from "react";
+
 import {StatusBar} from 'expo-status-bar';
-import {Pressable, StyleSheet, Text, View, TextInput} from 'react-native';
+import {Pressable, Text, View, TextInput, LogBox} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useFonts} from 'expo-font';
 
 
 import MovieList from './src/pages/MovieList.js'
-import DetailedMovie from "./src/pages/DetailedMovie.js";
-
-import {LogBox} from 'react-native';
+import Search from "./src/pages/Search";
 import MyList from "./src/pages/MyList";
-import React from "react";
-import NavBar from "./src/components/NavBar";
-import firebase from "./database/firebase";
 import Account from "./src/pages/Account";
 
+import DetailedMovie from "./src/pages/DetailedMovie.js";
+import NavBar from "./src/components/NavBar";
 
-import Search from "./src/pages/Search";
-import storeToken from "./src/store/storeToken";
 import register from "./src/account/register";
 import connect from "./src/account/connect";
+import checkTokenStore from "./src/store/checkTokenStore";
+
+import startStyles from "./src/styles/startStyles";
+import homeStyles from "./src/styles/homeStyles";
+import searchStyles from "./src/styles/searchStyles";
+import connectStyles from "./src/styles/connectStyles";
 
 
 
-const Stack = createNativeStackNavigator();
+
+const Stack = createNativeStackNavigator()
 
 //Composant pour afficher un titre personnalisé dans la barre de navigation
 function CustomTitle() {
@@ -32,7 +36,6 @@ function CustomTitle() {
             style={{color: '#ff0000'}}>FLIX</Text> </Text>
     );
 }
-
 
 
 
@@ -147,36 +150,6 @@ function StartScreen({navigation}) {
 
 }
 
-const startStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        // backgroundColor: '#232323',
-        backgroundColor: '#000000',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    mainTitle: {
-        color: '#ffffff',
-        fontSize: 80,
-        paddingBottom: 70,
-        fontFamily: "BebasNeue",
-    },
-
-    startButton: {
-        backgroundColor: '#000000',
-        borderRadius: 10,
-        paddingVertical: 5,
-        paddingHorizontal: 15,
-        borderWidth: 1,
-        borderColor: "#ff0000",
-    },
-    textButton: {
-        color: '#ff0000',
-        fontSize: 25,
-        fontFamily: "Helvetica",
-    },
-});
-
 
 
 
@@ -202,17 +175,17 @@ function LogScreen({navigation}) {
 
     return (
 
-        <View style={accountStyles.container}>
+        <View style={connectStyles.container}>
 
 
-            <Text style={accountStyles.mainTitle}>NEWS
+            <Text style={connectStyles.mainTitle}>NEWS
                 <Text style={{color: '#ff0000'}}>FLIX</Text>
             </Text>
 
 
             {/*Input nom d'utilisateur*/}
             <TextInput
-                style={accountStyles.input}
+                style={connectStyles.input}
                 onChangeText={text => onChangeLogin(text)}
                 value={login}
                 placeholder="Nom d'utilisateur"
@@ -231,7 +204,7 @@ function LogScreen({navigation}) {
 
             {/*Input mot de passe*/}
             <TextInput
-                style={accountStyles.input}
+                style={connectStyles.input}
                 onChangeText={text => onChangePassword(text)}
                 value={password}
                 placeholder="Mot de passe"
@@ -250,8 +223,8 @@ function LogScreen({navigation}) {
 
 
             {/*Bouton pour se connecter*/}
-            <Pressable style={accountStyles.logButton} onPress={() => connect(login, password, navigation)}>
-                <Text style={accountStyles.textButton}>
+            <Pressable style={connectStyles.logButton} onPress={() => connect(login, password, navigation)}>
+                <Text style={connectStyles.textButton}>
                     Se connecter
                 </Text>
             </Pressable>
@@ -259,7 +232,7 @@ function LogScreen({navigation}) {
 
             {/*Bouton pour se rendre à la page de connexion*/}
             <Pressable onPress={() => navigation.navigate('Register')}>
-                <Text style={accountStyles.signUpText}>
+                <Text style={connectStyles.signUpText}>
                     Se créer un compte
                 </Text>
             </Pressable>
@@ -270,6 +243,7 @@ function LogScreen({navigation}) {
     );
 
 }
+
 
 //Page de création du compte utilisateur
 function RegisterScreen({navigation}) {
@@ -293,17 +267,17 @@ function RegisterScreen({navigation}) {
 
     return (
 
-        <View style={accountStyles.container}>
+        <View style={connectStyles.container}>
 
 
-            <Text style={accountStyles.mainTitle}>NEWS
+            <Text style={connectStyles.mainTitle}>NEWS
                 <Text style={{color: '#ff0000'}}>FLIX</Text>
             </Text>
 
 
             {/*Input Mail*/}
             <TextInput
-                style={accountStyles.input}
+                style={connectStyles.input}
                 onChangeText={text => onChangeMail(text)}
                 value={mail}
                 placeholder="Adresse mail"
@@ -322,7 +296,7 @@ function RegisterScreen({navigation}) {
 
             {/*Input nom d'utilisateur*/}
             <TextInput
-                style={accountStyles.input}
+                style={connectStyles.input}
                 onChangeText={text => onChangeLogin(text)}
                 value={login}
                 placeholder="Nom d'utilisateur"
@@ -341,7 +315,7 @@ function RegisterScreen({navigation}) {
 
             {/*Input mot de passe*/}
             <TextInput
-                style={accountStyles.input}
+                style={connectStyles.input}
                 onChangeText={text => onChangePassword(text)}
                 value={password}
                 placeholder="Mot de passe"
@@ -361,7 +335,7 @@ function RegisterScreen({navigation}) {
 
             {/*Input confirmation de mot de passe*/}
             <TextInput
-                style={accountStyles.input}
+                style={connectStyles.input}
                 onChangeText={text => onChangePasswordConf(text)}
                 value={passwordConf}
                 placeholder="Confirmation mot de passe"
@@ -380,8 +354,8 @@ function RegisterScreen({navigation}) {
 
 
             {/*Bouton pour s'enregistrer*/}
-            <Pressable style={accountStyles.logButton} onPress={() => register(mail, login, password, passwordConf, navigation)}>
-                <Text style={accountStyles.textButton}>
+            <Pressable style={connectStyles.logButton} onPress={() => register(mail, login, password, passwordConf, navigation)}>
+                <Text style={connectStyles.textButton}>
                     Créer un compte
                 </Text>
             </Pressable>
@@ -389,7 +363,7 @@ function RegisterScreen({navigation}) {
 
             {/*Bouton pour se rendre à la page de connexion*/}
             <Pressable onPress={() => navigation.navigate('Log')}>
-                <Text style={accountStyles.signUpText}>
+                <Text style={connectStyles.signUpText}>
                     Se connecter
                 </Text>
             </Pressable>
@@ -401,67 +375,6 @@ function RegisterScreen({navigation}) {
 
 }
 
-const accountStyles = StyleSheet.create({
-
-
-    container: {
-        flex: 1,
-        // backgroundColor: '#232323',
-        backgroundColor: '#000000',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    mainTitle: {
-        color: '#ffffff',
-        fontSize: 80,
-        paddingBottom: 70,
-        fontFamily: "BebasNeue",
-    },
-
-
-    input: {
-        marginVertical: 10,
-        backgroundColor: '#282828',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '90%',
-        height: 60,
-        fontSize: 18,
-        borderRadius: 5,
-        paddingLeft: 10,
-        fontFamily: "Helvetica",
-        color: '#e7e7e7',
-    },
-
-
-    logButton: {
-        marginTop: 30,
-        backgroundColor: '#000000',
-        borderRadius: 7,
-        height: 55,
-        width: '90%',
-        borderWidth: 2,
-        borderColor: "#939393",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    textButton: {
-        color: '#e7e7e7',
-        fontSize: 20,
-        fontFamily: "Helvetica",
-    },
-
-    signUpText: {
-        marginTop: 60,
-        color: '#989898',
-        fontSize: 15,
-        fontFamily: "Helvetica",
-    },
-
-
-});
-
 
 
 
@@ -469,7 +382,6 @@ const accountStyles = StyleSheet.create({
 function HomeScreen({route, navigation}) {
 
     const {userId} = route.params
-    const {userMail} = route.params
 
 
     return (
@@ -485,7 +397,6 @@ function HomeScreen({route, navigation}) {
             <NavBar
                 navigation={navigation}
                 userId={userId}
-                userMail={userMail}
                 selected={"home"}
             />
 
@@ -497,31 +408,11 @@ function HomeScreen({route, navigation}) {
     );
 }
 
-const homeStyles = StyleSheet.create({
-
-    body: {
-        flex: 1,
-        backgroundColor: '#000000',
-        borderTopWidth: 1,
-        borderColor: 'rgba(255,255,255,0.63)',
-
-
-    },
-
-    buttonTemp: {
-        backgroundColor: '#919191',
-        width: 80,
-    },
-
-});
-
-
 
 //Page de Recherche
 function SearchScreen({route, navigation}) {
 
     const {userId} = route.params
-    const {userMail} = route.params
 
     //useState stockant la recherche de l'utilisateur
     const [search, onChangeSearch] = React.useState(null)
@@ -568,7 +459,6 @@ function SearchScreen({route, navigation}) {
             <NavBar
                 navigation={navigation}
                 userId={userId}
-                userMail={userMail}
                 selected={"search"}
                 opacity={opacity}
             />
@@ -581,51 +471,12 @@ function SearchScreen({route, navigation}) {
     );
 }
 
-const searchStyles = StyleSheet.create({
-
-    body: {
-        flex: 1,
-        backgroundColor: '#000000',
-        borderTopWidth: 1,
-        borderColor: 'rgba(255,255,255,0.63)',
-        alignItems: "center",
-
-
-    },
-
-    buttonTemp: {
-        backgroundColor: '#919191',
-        width: 80,
-    },
-
-
-    input: {
-        // flex: 1,
-        // backgroundColor: '#232323',
-        marginVertical: 20,
-        backgroundColor: '#282828',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '90%',
-        height: 50,
-        fontSize: 18,
-        borderRadius: 5,
-        paddingLeft: 10,
-        fontFamily: "Helvetica",
-        color: '#e7e7e7',
-    },
-
-
-});
-
-
 
 //Page d'affichage de la Liste des favoris de l'utilisateur
 function MyListScreen({route, navigation}) {
 
 
     const {userId} = route.params
-    const {userMail} = route.params
 
 
     return (
@@ -641,7 +492,6 @@ function MyListScreen({route, navigation}) {
             <NavBar
                 navigation={navigation}
                 userId={userId}
-                userMail={userMail}
                 selected={"myList"}
             />
 
@@ -654,12 +504,11 @@ function MyListScreen({route, navigation}) {
 }
 
 
-//Page d'affichage de la Liste des favoris de l'utilisateur
+//Page d'affichage des informations personnelles de l'utilisateur
 function AccountScreen({route, navigation}) {
 
 
     const {userId} = route.params
-    const {userMail} = route.params
 
 
     return (
@@ -669,14 +518,12 @@ function AccountScreen({route, navigation}) {
             <Account
                 navigation={navigation}
                 userId={userId}
-                userMail={userMail}
             />
 
 
             <NavBar
                 navigation={navigation}
                 userId={userId}
-                userMail={userMail}
                 selected={"account"}
             />
 
@@ -687,6 +534,8 @@ function AccountScreen({route, navigation}) {
 
     );
 }
+
+
 
 
 //Page de détails du film
@@ -709,16 +558,13 @@ function DetailsScreen({route, navigation}) {
         </View>
 
 
-    );
+    )
 }
 
 
-
-
-
-
+//Ignore l'erreur du timer lié à un conflit entre le setTimeout et la base de donnée Firebase
+// Après plusieurs recherches sur des forums tout le monde semble ignorer cette erreur, car elle est liée à un conflit entre ces 2 éléments
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
-LogBox.ignoreLogs(['Require cycles are allowed'])
 
 
 
