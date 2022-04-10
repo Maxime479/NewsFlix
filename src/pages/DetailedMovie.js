@@ -1,4 +1,4 @@
-import {Button, Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Button, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/AntDesign';
 import YoutubePlayer from 'react-native-youtube-iframe';
@@ -12,9 +12,12 @@ class DetailedMovie extends React.Component{
     constructor(props) {
         super(props);
 
+
         // this.docs = firebase.firestore().collection('likes')
 
         this.state = {
+
+            isLoading: true,
 
             userId: this.props.userId,
             likesPath: 'users/' + this.props.userId + '/likes',
@@ -46,7 +49,7 @@ class DetailedMovie extends React.Component{
 
             init: false,
 
-            upFrame: <Image style={styles.moviePoster} source={{uri: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path}} />,
+            upFrame: <Image style={{height: '28%', width: '100%', alignSelf: 'center'}} source={{uri: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path}} />,
             downFrame: <View/>,
             videoDisplayed: false,
             providersDisplayed: false,
@@ -63,12 +66,27 @@ class DetailedMovie extends React.Component{
         this.addLikeToFirebase = this.addLikeToFirebase.bind(this)
     }
 
+    _isMounted = false;
+
+
     //Initialisation des données
     componentDidMount() {
+        this._isMounted = true;
+
 
         const like = this.isItLiked(this.props.movieData.id)
 
         this.setState({liked: like})
+
+        const windowWidth = Dimensions.get('window').width;
+        let imgWidth = windowWidth //100%
+        if(imgWidth > 900){
+            imgWidth = 900
+        }
+        let imgHeight = imgWidth/16*9//22%
+        const image = <Image style={{height: imgHeight, width: imgWidth, alignSelf: 'center'}} source={{uri: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path}} />
+
+        this.setState({upFrame: image})
 
         const id = this.props.movieData.id;
 
@@ -90,8 +108,19 @@ class DetailedMovie extends React.Component{
         //Timer avant lequel la page ne doit pas être affiché
         setTimeout(() => {
             this.setState({timePassed: true})
+
+
         }, 3000);
     }
+
+
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+
+
 
 
 
@@ -188,6 +217,14 @@ class DetailedMovie extends React.Component{
                     return
                 }
             }
+        }).then(() => {
+            if(this.state.frenchTrailer === undefined && !this.state.providerUnavailable){
+                this.setState({providerUnavailable: true})
+            }
+        }).then(() => {
+            if (this._isMounted) {
+                this.setState({isLoading: false})
+            }
         }).catch(error => {console.log("Erreur lors de la récupération du lien de la vidéo\nErreur : " + error)})
     }
 
@@ -198,8 +235,27 @@ class DetailedMovie extends React.Component{
             return;
         }
 
-        const image = <Image style={styles.moviePoster} source={{uri: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path}} />
-        const video = <YoutubePlayer height={'28%'} play={true} videoId={this.state.frenchTrailer} />
+        const imgPath = 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path
+
+        const windowWidth = Dimensions.get('window').width;
+
+        let marginLeft = 0
+
+
+        let imgWidth = windowWidth //100%
+
+        if(imgWidth > 900){
+            imgWidth = 900
+            marginLeft = (windowWidth - 900) / 2
+        }
+        let imgHeight = imgWidth/16*9//22%
+
+
+
+        console.log({width: {width: imgWidth, height: imgHeight}})
+
+        const image = <Image style={{height: imgHeight, width: imgWidth, alignSelf: 'center'}} source={{uri: 'https://image.tmdb.org/t/p/w500' + this.props.movieData.backdrop_path}} />
+        const video = <YoutubePlayer style={{marginLeft: marginLeft}} width={imgWidth} height={imgHeight} play={true} videoId={this.state.frenchTrailer} />
 
         let toSet
 
@@ -212,6 +268,8 @@ class DetailedMovie extends React.Component{
         }
 
         this.setState({upFrame: toSet})
+
+
     }
 
 
@@ -329,7 +387,7 @@ class DetailedMovie extends React.Component{
         let stackedLogos = []
 
         for(let i=0; i<providersList.length; i++){
-            stackedLogos.push(<Image style={styles.distribLogo} source={{uri: 'https://image.tmdb.org/t/p/w500' + providersList[i].logo_path}} />)
+            stackedLogos.push(<Image key={i} style={styles.distribLogo} source={{uri: 'https://image.tmdb.org/t/p/w500' + providersList[i].logo_path}} />)
         }
 
         this.setState({stackedLogos: stackedLogos})
@@ -360,7 +418,14 @@ class DetailedMovie extends React.Component{
     render() {
 
         const movieData = this.props.movieData
-        const date = movieData.release_date.slice(0, 4)
+
+        let date = movieData.release_date
+        if(date !== undefined){
+            date = date.slice(0, 4)
+        }else{
+            date = 'Unknown'
+        }
+
 
         const playIcon = <Icon name="caretright" size={20} color="#000" />;
         const dlIcon = <Icon name="download" size={20} color="#fff" />;
@@ -375,17 +440,11 @@ class DetailedMovie extends React.Component{
 
         }else{
 
-            if(this.state.frenchTrailer === undefined && !this.state.providerUnavailable){
-                this.setState({providerUnavailable: true})
-
-                // this.changeButton(this.state.liked)
-            }
-
-
-
 
             return (
                 <View style={styles.mainContainer}>
+
+
                     {/*<View style={styles.videoContainer}>*/}
                     {this.state.upFrame}
                     {/*</View>*/}
@@ -463,6 +522,7 @@ class DetailedMovie extends React.Component{
 
                     </View>
                 </View>
+
             )
 
         }

@@ -37,34 +37,42 @@ class Loading extends React.Component{
         }else{
             return(
 
-                <View>
-                    <AnimatedLoader
-                        visible={true}
-                        // overlayColor="rgba(255,255,255,0.75)"
-                        overlayColor="rgba(255,255,255,0)"
-                        animationStyle={styles.lottie}
-                        speed={2}
-                    >
-                        <Text>Loading...</Text>
-                    </AnimatedLoader>
+                <View style={styles.back}>
+
+
+                    {/*<AnimatedLoader*/}
+                    {/*    visible={true}*/}
+                    {/*    // overlayColor="rgba(255,255,255,0.75)"*/}
+                    {/*    overlayColor="rgba(255,255,255,0)"*/}
+                    {/*    animationStyle={styles.lottie}*/}
+                    {/*    speed={2}*/}
+                    {/*>*/}
+                    {/*    <Text>Loading...</Text>*/}
+                    {/*</AnimatedLoader>*/}
 
 
                     {/*<LottieView*/}
                     {/*    // source={require('../path/to/animation.json')}*/}
                     {/*    source={{uri: 'https://assets5.lottiefiles.com/datafiles/zc3XRzudyWE36ZBJr7PIkkqq0PFIrIBgp4ojqShI/newAnimation.json'}}*/}
-                    {/*    colorFilters={[*/}
-                    {/*        {*/}
-                    {/*            keypath: 'button',*/}
-                    {/*            color: '#F00000',*/}
-                    {/*        },*/}
-                    {/*        {*/}
-                    {/*            keypath: 'Sending Loader',*/}
-                    {/*            color: '#F00000',*/}
-                    {/*        },*/}
-                    {/*    ]}*/}
+                    {/*    // colorFilters={[*/}
+                    {/*    //     {*/}
+                    {/*    //         keypath: 'button',*/}
+                    {/*    //         color: '#F00000',*/}
+                    {/*    //     },*/}
+                    {/*    //     {*/}
+                    {/*    //         keypath: 'Sending Loader',*/}
+                    {/*    //         color: '#F00000',*/}
+                    {/*    //     },*/}
+                    {/*    // ]}*/}
                     {/*    autoPlay*/}
                     {/*    loop*/}
                     {/*/>*/}
+
+
+                    <LottieView source={require('../animations/loading_circle.json')} autoPlay />
+
+
+
                 </View>
             )
         }
@@ -72,6 +80,13 @@ class Loading extends React.Component{
 }
 
 const styles = StyleSheet.create({
+
+    back :{
+        // backgroundColor: '#545454',
+        width: '100%',
+        height: '90%',
+
+    },
 
     lottie: {
         width: 100,

@@ -5,10 +5,19 @@ NewsFlix est une application React Native construite à l'aide d'[Expo](https://
 
 ## Tester l'application
 
-> Prérequis : avoir Node.js installé sur le pc
+Pour tester l'application en la **téléchargeant** :
+- Aller directement sur la page de téléchargement de [NewsFlix](http://newsflix.tk/download)
+
+> Pour Android : télécharger simplement l'apk sur le smartphone   
+> Pour IOS : télécharger le simulateur à lancer sur un émulateur dans XCode (drag & drop)    
+
+
+<br/>
 
 Pour tester l'application à partir d'**Expo** directement :
 
+> Prérequis : avoir Node.js installé sur le pc
+> 
  1. Ouvrir le projet dans un IDE
  2. Exécuter la commande `npm install`
  3. Exécuter la commande `expo start`
@@ -19,11 +28,6 @@ Pour tester l'application à partir d'**Expo** directement :
 
 
 
-Pour tester l'application en la **téléchargeant** : 
-- Aller directement sur la page de téléchargement de [NewsFlix](http://newsflix.tk/download)
-
-> Pour Android : télécharger simplement l'apk sur le smartphone   
-> Pour IOS : télécharger le simulateur à lancer sur un émulateur XCode 
 
 
 
@@ -73,6 +77,14 @@ De plus, 2 fonctions supplémentaires sont disponibles:
 ### Affichage des détails du compte
 Dans la barre de navigation, le bouton `Mon compte` permet de consulter les informations personnelles liées au compte tel que l'adresse mail, le nom d'utilisateur ou le mot de passe.
 
+### Conservation de la connexion
+Si l'application est installée sur le smartphone, après connexion, l'utilisateur restera connecté même après avoir quitté l'application et
+l'avoir relancée. Seul un appui sur le bouton de déconnexion changera cet état. Cela est possible grâce au stockage asynchrone
+de l'id de l'utilisateur et de son état de navigation dans une `PERSISTENCE_KEY`.
+
+### Refresh
+Il est possible de refresh les page `Accueil` et `Ma Liste` par un drag vers le bas afin de mettre à jour les données.
+
 
 
 
@@ -80,11 +92,11 @@ Dans la barre de navigation, le bouton `Mon compte` permet de consulter les info
 
 Voici une liste de composants et des librairies équivalents entre Swift et React Native :
 
-|                |Swift                          |React Native                         |
-|----------------|-------------------------------|-----------------------------|
-|vue Principale | UITableViewController           |FlatList            |
-|vue Détail | UIViewController            |??           |
-|liaison des vues         | Segue (Show) | React Navigation|
-|??        | UIImage (Assets.xcassets) | ??|
-|??        | XCUITest (api) | ??|
-|stockage locales        | CoreData | ??|
+|                  | Swift                       | React Native        |
+|------------------|-----------------------------|---------------------|
+| vue Principale   | UITableViewController       | FlatList            |
+| vue Détaillée    | UIViewController            | Classe React Native |
+| liaison des vues | Segue (Show)                | React Navigation    |
+| Images           | UIImage (Assets.xcassets)   | Image (assets.icon) |
+| Tests API        | XCUITest (api)              | ??                  |
+| stockage locales | CoreData                    | Redux               |

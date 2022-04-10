@@ -1,7 +1,7 @@
 import React from "react";
 
 import {StatusBar} from 'expo-status-bar';
-import {Pressable, Text, View, TextInput, LogBox} from 'react-native';
+import {Pressable, Text, View, TextInput, LogBox, Linking, Platform, ActivityIndicator} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useFonts} from 'expo-font';
@@ -17,30 +17,70 @@ import NavBar from "./src/components/NavBar";
 
 import register from "./src/account/register";
 import connect from "./src/account/connect";
-import checkTokenStore from "./src/store/checkTokenStore";
 
 import startStyles from "./src/styles/startStyles";
 import homeStyles from "./src/styles/homeStyles";
 import searchStyles from "./src/styles/searchStyles";
 import connectStyles from "./src/styles/connectStyles";
 
+//async-storage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-
+//App Navigator
 const Stack = createNativeStackNavigator()
 
 //Composant pour afficher un titre personnalisé dans la barre de navigation
 function CustomTitle() {
     return (
-        <Text style={{color: '#ffffff', fontSize: 35, fontFamily: "BebasNeue",}}>NEWS<Text
+        <Text style={{color: '#ffffff', fontSize: 35, fontFamily: "BebasNeue", width: 106, height: 38}}>NEWS<Text
             style={{color: '#ff0000'}}>FLIX</Text> </Text>
     );
 }
 
 
 
+const PERSISTENCE_KEY = 'NAVIGATION_STATE';
 
 export default function App() {
+
+
+    //Partie du code entièrement dédié au stockage de l'état de navigation de l'utilisateur
+    //Permet notamment de ne pas se connecter à chaque fois que l'on relance l'appli
+    const [isReady, setIsReady] = React.useState(false);
+    const [initialState, setInitialState] = React.useState();
+
+    React.useEffect(() => {
+        const restoreState = async () => {
+            try {
+                const initialUrl = await Linking.getInitialURL();
+
+                if (Platform.OS !== 'web' && initialUrl == null) {
+                    //Ne rétablit l'état de navigation que s'il n'y a pas de lien profond et que l'on n'est pas sur le web
+                    const savedStateString = await AsyncStorage.getItem(PERSISTENCE_KEY);
+                    const state = savedStateString
+                        ? JSON.parse(savedStateString)
+                        : undefined;
+
+                    if (state !== undefined) {
+                        setInitialState(state);
+                    }
+                }
+            } finally {
+                setIsReady(true);
+            }
+        };
+
+        if (!isReady) {
+            restoreState().catch(error => {console.log("Erreur lors de la récupération de l'état de navigation\nErreur : " + error)})
+        }
+    }, [isReady]);
+
+    if (!isReady) {
+        return <ActivityIndicator/>;
+    }
+
+
 
 
 //Paramètres de la barre de navigation
@@ -95,7 +135,11 @@ export default function App() {
 
     //Arborescence de la navigation de l'App
     return (
-        <NavigationContainer>
+        <NavigationContainer
+            initialState={initialState}
+            onStateChange={(state) =>
+                AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state))
+            }>
             <Stack.Navigator>
                 <Stack.Screen name="Start" component={StartScreen} options={{headerShown: false}}/>
                 <Stack.Screen name="Log" component={LogScreen} options={{headerShown: false}}/>
@@ -124,9 +168,6 @@ function StartScreen({navigation}) {
     if (!loaded) {
         return null;
     }
-
-    //Vérification de l'existence du Token utilisateur
-    checkTokenStore(navigation)
 
 
     return (
@@ -539,7 +580,7 @@ function AccountScreen({route, navigation}) {
 
 
 //Page de détails du film
-function DetailsScreen({route, navigation}) {
+function DetailsScreen({route}) {
 
     const {movieData} = route.params
     const {userId} = route.params
@@ -562,9 +603,11 @@ function DetailsScreen({route, navigation}) {
 }
 
 
-//Ignore l'erreur du timer lié à un conflit entre le setTimeout et la base de donnée Firebase
-// Après plusieurs recherches sur des forums tout le monde semble ignorer cette erreur, car elle est liée à un conflit entre ces 2 éléments
+//Ignore les erreurs mémoire du timer lié à un conflit entre le setTimeout et la base de donnée Firebase
+// Après plusieurs recherches sur des forums tout le monde semble ignorer ces erreurs de 'fuite mémoire', car elle est liée à un conflit entre ces 2 éléments
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
+LogBox.ignoreLogs(["Can't perform"])
+LogBox.ignoreLogs(["Cannot update"])
 
 
 

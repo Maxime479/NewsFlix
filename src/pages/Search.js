@@ -59,7 +59,7 @@ class Search extends React.Component{
         if(this.props.search === null || this.state.foundMovies === undefined){
 
             return (
-                <View style={styles.mainContainer}>
+                <View style={styles.mainContainerBefore}>
 
                         <Text style={styles.backText}>Votre recherche...</Text>
 
@@ -73,7 +73,8 @@ class Search extends React.Component{
 
                     <FlatList
                         style={[styles.list, {marginBottom: margin}]}
-                        numColumns={3}
+                        numColumns={1000}
+                        columnWrapperStyle={{ flexWrap: 'wrap', flex: 1, marginTop: 5, marginLeft: 10, flexGrow: 1, justifyContent: 'center'}}
                         data={this.state.foundMovies}
                         renderItem={({item}) => <Movie optionalPad={5} movieData={item} userId={this.props.userId} navigation={this.props.navigation} />}
                     />
@@ -92,10 +93,17 @@ class Search extends React.Component{
 const styles = StyleSheet.create({
 
 
-    mainContainer: {
+    mainContainerBefore: {
         flex: 1,
         width: '100%',
         justifyContent: "center",
+        alignItems: "center",
+    },
+
+    mainContainer: {
+        flex: 1,
+        width: '100%',
+        justifyContent: "flex-start",
         alignItems: "center",
     },
 
@@ -121,6 +129,7 @@ const styles = StyleSheet.create({
 
     list: {
         flexGrow:0,
+
     }
 
 })

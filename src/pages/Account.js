@@ -54,6 +54,8 @@ class Account extends React.Component{
         const {navigation} = this.props
 
 
+
+
         if(this.state.accountData === undefined){
 
             return (
@@ -119,6 +121,9 @@ class Account extends React.Component{
                 </View>
             )
         }
+
+
+
     }
 }
 
