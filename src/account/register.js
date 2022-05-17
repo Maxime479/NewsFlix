@@ -58,6 +58,7 @@ function register(mailData, loginData, passwordData, passwordConfData, navigatio
                                 mail: mailData,
                                 login: loginData,
                                 password: passwordData,
+                                permission: 2,
                                 creatAt: firebase.firestore.FieldValue.serverTimestamp(),
                             })
 

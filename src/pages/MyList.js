@@ -1,4 +1,4 @@
-import {FlatList, StyleSheet, Text, View, RefreshControl} from "react-native";
+import {FlatList, StyleSheet, Text, View, RefreshControl, Pressable, TouchableOpacity} from "react-native";
 import React from "react";
 import axios from 'axios';
 import Movie from "../components/Movie";
@@ -84,6 +84,12 @@ class MyList extends React.Component{
                         {/*Tendances actuelles*/}
                         <View style={styles.sectionContainer}>
 
+                            {/*<View style={styles.elevation}>*/}
+                            {/*    <TouchableOpacity style={styles.button}>*/}
+                            {/*        <Text style={styles.buttonText}>Hey</Text>*/}
+                            {/*    </TouchableOpacity>*/}
+                            {/*</View>*/}
+
                             <Text style={styles.sectionTitle}>Ma Liste</Text>
 
                             {/*Liste qui affiche le composant film à chaque itération d'objet de movieData*/}
@@ -134,11 +140,37 @@ const styles = StyleSheet.create({
         fontFamily: 'HelveticaBold',
         marginTop: 10,
         marginBottom: 5,
+        // textShadowColor: '#03e9f4',
+        // textShadowOffset: {width: -1, height: 1},
+        // textShadowRadius: 15,
+
     },
 
     list: {
         marginBottom: '30%',
-    }
+    },
+
+    // button: {
+    //     backgroundColor: '#e4e0e0',
+    //     // shadowColor: '#03e9f4',
+    //     shadowOffset: {width: -1, height: 1},
+    //     shadowRadius: 15,
+    //     shadowOpacity: 1,
+    // },
+    // elevation: {
+    //     backgroundColor: '#955b5b',
+    //     elevation: 20,
+    //     shadowColor: '#03e9f4',
+    //     padding: 15,
+    //     borderRadius: 10
+    // },
+    //
+    // buttonText: {
+    //     // textShadowColor: '#03e9f4',
+    //     // textShadowOffset: {width: -1, height: 1},
+    //     // textShadowRadius: 15,
+    //     fontSize: 25,
+    // }
 
 
 });

@@ -1,0 +1,131 @@
+/*.container {*/
+/*    flex: 1;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    background-color: #f5fcff;*/
+/*}*/
+
+/*.blue {*/
+/*    color: blue;*/
+/*    font-size: 30px;*/
+/*}*/
+
+
+/*.monitoringButton{*/
+
+/*}*/
+
+
+.mainContainer {
+    flex: 1;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #0a0a0a;
+}
+
+.startContainer {
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+}
+
+.endContainer {
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+}
+
+
+.sectionContainer {
+    background-color: #0a0a0a;
+    align-items: flex-start;
+    justify-content:center;
+    /*|||||*/
+    border-width: 1px;
+    border-color: #494949;
+    width: 100%;
+    flex-direction: column;
+    padding: 15px 15px;
+}
+
+
+.monitoringContainer {
+    background-color: #0a0a0a;
+    align-items: flex-end;
+    justify-content:space-between;
+    /*|||||*/
+    border-width: 1px;
+    border-color: #494949;
+    width: 100%;
+    flex-direction: row;
+    padding: 15px;
+}
+
+
+
+.dataContainer {
+    margin: 5px 0 5px 10px;
+    background-color: #0a0a0a;
+    align-items: flex-start;
+    border-radius: 7px;
+    width: 90%;
+    height: 60%;
+}
+
+.title {
+    color: #ffffff;
+    font-size: 25px;
+    /*font-family: HelveticaBold, serif;*/
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+.data {
+    color: #cbcbcb;
+    font-size: 17px;
+    /*font-family: Helvetica, serif;*/
+}
+.bold {
+    font-weight: bold;
+    color: #8c8c8c;
+    font-size: 14px;
+}
+
+.deconnectButton {
+    font-weight: bold;
+    background-color: #670000;
+    font-size: 14px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.deconnectButtonText {
+    font-weight: bold;
+    font-size: 18px;
+    /*font-family: HelveticaBold, serif;*/
+    color: #9a9a9a;
+}
+
+.monitoringButtonText {
+    font-weight: bold;
+    font-size: 17px;
+    /*font-family: HelveticaBold, serif;*/
+    color: #000000;
+    /*textShadowColor: #03e9f4;*/
+    /*textShadowOffset: {width: -1, height: 1};*/
+    /*textShadowRadius: 15;*/
+    /*text-shadow: #FF7A00;*/
+
+}
+
+.monitoringButton {
+    font-weight: bold;
+    /*|||||*/
+    /*border-width: 1px;*/
+    /*border-color: #353535;*/
+    padding: 5px;
+    border-radius: 5px;
+    align-self: center;
+    /*filter: blur(15px);*/
+    box-shadow: 0 0 50px #03e9f4;
+    background: #FF7A00;
+}
+

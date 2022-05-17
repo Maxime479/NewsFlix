@@ -149,6 +149,7 @@ export default function App() {
                 <Stack.Screen name="Details" component={DetailsScreen} options={detailsNavOptions}/>
                 <Stack.Screen name="MyList" component={MyListScreen} options={homeNavOptions}/>
                 <Stack.Screen name="Account" component={AccountScreen} options={homeNavOptions}/>
+                <Stack.Screen name="Monitoring" component={MonitoringScreen} options={homeNavOptions}/>
             </Stack.Navigator>
         </NavigationContainer>
     );
@@ -566,6 +567,36 @@ function AccountScreen({route, navigation}) {
                 navigation={navigation}
                 userId={userId}
                 selected={"account"}
+            />
+
+            <StatusBar style="auto"/>
+
+        </View>
+
+
+    );
+}
+
+//Page de monitoring Admin
+function MonitoringScreen({route, navigation}) {
+
+
+    const {userId} = route.params
+
+
+    return (
+
+        <View style={homeStyles.body}>
+
+            <Account
+                navigation={navigation}
+                userId={userId}
+            />
+
+
+            <NavBar
+                navigation={navigation}
+                userId={userId}
             />
 
             <StatusBar style="auto"/>
